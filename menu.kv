@@ -1,0 +1,426 @@
+#:kivy 2.0
+
+
+DisplayScreenManager:
+    MainMenuScreen:
+    SettingsScreen:
+    SurveyScreen:
+    AltSurveyScreen:
+    FeedbackScreen:
+    InformationScreen:
+    OnboardSurveyScreen:
+    
+    
+
+<MainMenuScreen>:
+    name: "mainMenuScreen"
+    backgroun_color: 0, 0, 0, 1
+    #clock_var: clock
+    
+
+    FloatLayout:
+
+        GridLayout: 
+            rows: 3
+
+
+            GridLayout: 
+                cols: 1
+                size_hint: None, None
+                size: root.width, root.height*0.2
+                padding: 100, 10
+
+                Label:
+                    text: "Bugs Beeps and Blips"
+                    
+            
+            GridLayout:
+                rows: 3
+                size_hint: None, None
+                size: root.width, root.height*0.6
+                background_normal: ""
+                padding: 100, 20
+                
+
+                Button:
+                    text: "Survey"
+                    background_color: .12, .84, 1, 1
+                    on_press: 
+                        root.manager.transition.direction = 'left'
+                        app.root.current = 'altSurveyScreen'
+                    
+
+                Button:
+                    text: "Feedback"
+                    background_color: .12, .84, 1, 1
+                    on_press: 
+                        root.manager.transition.direction = 'left'
+                        app.root.current = 'feedbackScreen'
+
+
+                Button: 
+                    text: "Study Information"
+                    background_color: .12, .84, 1, 1
+                    on_press: 
+                        root.manager.transition.direction = 'left'
+                        app.root.current = 'informationScreen'
+
+            GridLayout:
+                cols: 4
+                size_hint: None, None
+                size: root.width, root.height*0.2
+                padding: 100, 20
+
+                Button: 
+                    text: "Initial Survey"
+                    background_color: .12, .84, 1, 1
+                    on_press: 
+                        root.manager.transition.direction = 'left'
+                        app.root.current = 'onboardSurveyScreen'
+
+                Button: 
+                    text: "Settings"
+                    background_color: .12, .84, 1, 1
+                    on_press: 
+                        root.manager.transition.direction = 'left'
+                        app.root.current = 'settingsScreen'
+
+                Button: 
+                    text: "Test me"
+                    background_color: .12, .84, 1, 1
+                    on_press: app.notify("Hello World!","It's Survey Time",True)
+
+                Button: 
+                    text: "No Toast"
+                    background_color: .12, .84, 1, 1
+                    on_press: app.notify("Hello World!","no Toast this time",False)
+
+
+                    
+
+<SettingsScreen>:
+    name: "settingsScreen"
+    earliest_var : Earliest
+    latest_var : Latest
+
+    FloatLayout: 
+
+        GridLayout: 
+            rows: 4
+    
+            GridLayout: 
+                cols: 1
+                size_hint: None, None
+                size: root.width, root.height*0.2
+
+                Label: 
+                    text: "Please enter the time range in which you would like to receive Surveys"
+                Label: 
+                    text: "Currently Selected Range: "
+                
+            GridLayout:
+                cols: 2
+                size_hint: None, None
+                size: root.width, root.height*0.5
+                padding: 20, 20
+
+                Label: 
+                    text: "Earliest Time: "
+            
+
+                Label: 
+                    #text: str(app.earliest_survey_time)
+                    text: "Time"
+                    id: earliest_label
+                
+                Label: 
+                    text: "Latest Time: "
+
+                Label: 
+                    #text: str(app.latest_survey_time)
+                    text: "Time"
+                    id: latest_label
+                
+                Label: 
+                    text: "New Earliest Time: "
+                    color: .12, .84, 1,1
+                TextInput: 
+                    id : Earliest
+                    mutliline: False
+                Label: 
+                    text: "New Latest Time: "
+                    color: .12, .84, 1,1
+                TextInput: 
+                    id: Latest
+                    mutliline : False
+
+            GridLayout: 
+                cols: 2
+                size_hint: None, None, 
+                size: root.width, root.height *0.1
+                padding: 20, 0
+
+                Button: 
+                    text: "Submit"
+                    on_press: 
+                        app.submitButton(Earliest, Latest)
+                        root.submitUpdate(Earliest, Latest)
+                        app.setTargetTime(app.time_list)
+                    background_color: .12, .84, 1,1
+
+        
+
+
+            GridLayout: 
+                cols: 4
+                size_hint: None, None
+                size: root.width, root.height*0.2
+                padding: 20, 20
+                Label: 
+                Label:
+                Label: 
+
+                Button: 
+                    text: "Back"
+                    on_press: 
+                        root.manager.transition.direction = 'right'
+                        app.root.current = "mainMenuScreen"
+   
+<SurveyScreen>:
+    name: "surveyScreen"
+
+    FloatLayout:
+
+        GridLayout: 
+            rows: 3
+
+            GridLayout: 
+                cols: 1
+                size_hint: None, None
+                size: root.width , root.height*0.2
+                padding: 100,50
+
+                Label: 
+                    text: "UCC Logo here"
+        
+            GridLayout:
+
+                cols: 2
+                size_hint: None, None
+                size: root.width, root.height*0.6
+                padding: 100,50
+
+                Button:
+                    text: "Survey 1"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+                    
+                
+                Button:
+                    text: "Survey 2"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+
+                Button:
+                    text: "Survey 3"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+
+                Button:
+                    text: "Survey 4"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+
+                Button:
+                    text: "Survey 5"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+
+                Button:
+                    text: "Survey 6"
+                    on_press: app.toSurvey()
+                    background_color: .12, .84, 1,1
+
+
+            GridLayout: 
+                cols: 5
+                size_hint: None, None
+                size: root.width, root.height* 0.2
+                padding: 100,20
+
+                Label:
+                Label:
+                Label:
+                Label:
+                
+                Button: 
+                    text: "Back"
+                    on_press: 
+                        root.manager.transition.direction = 'right'
+                        app.root.current = "mainMenuScreen"
+
+<AltSurveyScreen>
+    name: "altSurveyScreen"
+
+    FloatLayout:
+
+        GridLayout: 
+            rows: 4
+
+            GridLayout: 
+                cols: 1
+                size_hint: None, None
+                size: root.width , root.height*0.2
+                padding: 100,50
+
+                Label: 
+                    text: "UCC Logo here"
+        
+            GridLayout:
+
+                rows: 1
+                size_hint: None, None
+                size: root.width, root.height*0.4
+                padding: 100,50
+
+                Button:
+                    text: "Start the Survey"
+                    on_press: 
+                        app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_8oDU80kby5218HA','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
+                        app.surveyTaken()
+                    background_color: .12, .84, 1,1
+            
+            GridLayout: 
+                cols: 3
+                size_hint: None, None
+                size: root.width, root.height*0.2
+                padding: 100,10
+    
+                Label:
+
+                Button:
+                    text: "Snooze"
+                    background_color: .12, .84, 1,1
+                    on_press: 
+                        app.snooze()
+                        app.feedbacknotification("Survey Snoozed", True)
+                    #on_press: app.notify("Hello World!", "It's Survey Time", True)
+                    #on_press: app.feedbacknotification("Survey Snoozed", True)
+
+                
+                Label:
+
+
+            GridLayout: 
+                cols: 5
+                size_hint: None, None
+                size: root.width, root.height* 0.2
+                padding: 100,20
+
+                Label:
+                Label:
+                Label:
+                Label:
+                
+                Button: 
+                    text: "Back"
+                    on_press: 
+                        root.manager.transition.direction = 'right'
+                        app.root.current = "mainMenuScreen"
+
+<FeedbackScreen>
+    name: "feedbackScreen"
+
+    GridLayout: 
+        rows: 2
+
+        Label: 
+            text: "Under Construction"
+
+        Button: 
+            text: "Back"
+            on_press: 
+                root.manager.transition.direction = 'right'
+                app.root.current = "mainMenuScreen"
+
+<InformationScreen>
+    name: "informationScreen"
+
+    FloatLayout: 
+
+    GridLayout: 
+        rows: 2
+
+        GridLayout:
+            rows: 1
+            size_hint: None, None
+            size: root.width, root.height*0.8
+
+            Label: 
+                text: "Lorem ipsum dolor sit amet, \n consectetur adipiscing elit, sed do eiusmod tempor incididunt ut \n labore et dolore magna aliqua. Ut enim ad minim veniam, \n quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \n Duis aute irure dolor in reprehenderit in voluptate \n velit esse cillum dolore eu fugiat nulla pariatur.\n Excepteur sint occaecat cupidatat non proident, \n sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+        GridLayout: 
+            cols: 5
+            size_hint: None, None
+            size: root.width, root.height*0.2
+            padding: 100,20
+
+            Label:
+            Label:
+            Label:
+            Label:
+
+            Button: 
+                text: "Back"
+                on_press: 
+                    root.manager.transition.direction = 'right'
+                    app.root.current = "mainMenuScreen"
+
+<OnboardSurveyScreen>
+    name: "onboardSurveyScreen"
+
+    FloatLayout:
+
+        GridLayout:
+            rows: 4
+
+            GridLayout:
+                rows: 1
+                size_hint: None, None
+                size: root.width, root.height *0.2
+                Label: 
+                    text: "Please complete these initial surveys"
+
+            GridLayout: 
+                rows: 2
+                size_hint: None, None
+                size: root.width, root.height *0.6
+                padding: 100, 0
+                
+                Button:
+                    text: "General Questionnaire"
+                    background_color: .12, .84, 1,1
+                    on_press: app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_b9qo6YWLGbNyfu6','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
+                
+                Button: 
+                    text: "Personality Questionnaire"
+                    background_color: .12, .84, 1,1
+                    on_press: app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_1Ye5r4ktuIeYMAK','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
+
+            GridLayout: 
+
+                cols: 5
+                size_hint: None, None
+                size: root.width, root.height *0.2
+                padding: 100, 20
+
+                Label:
+                Label:
+                Label:
+                Label:
+
+                Button: 
+                    text: "Back"
+                    on_press: 
+                        root.manager.transition.direction = 'right'
+                        app.root.current = "mainMenuScreen"
