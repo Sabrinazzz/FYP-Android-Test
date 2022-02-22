@@ -1,6 +1,4 @@
-#from dis import show_code
-from errno import EALREADY
-from turtle import color, settiltangle, update
+#from errno import EALREADY
 import kivy
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
@@ -81,7 +79,7 @@ class Menu(App):
     snooze_counter = 0
     time_changed = False # flag to determine when the time preference has been changed
     
-
+# -------------------------------------------------------- Main app functions -------------------------------------------------------------
 
     def __build__(self):
 
@@ -108,10 +106,6 @@ class Menu(App):
 
    
 
-# ------------- Main Menu Screen Functions ------------------------
-
-    #clock_var = ObjectProperty(None)
-
 #------------------------- time based functions---------------------------------------------------------------------------------------
     
     def showTime(self,tick):
@@ -129,9 +123,10 @@ class Menu(App):
 #--------------------------------- scheduling functions -----------------------------------------------------------------------------------------------------------
 
     def checkNotification(self,tick):
-        #!TODO the app notification probelm could be solved with toast notifications 
+        print("checkNotification started running") 
         time = self.showTime(60) # access current time value in hour:minute:second format
         if self.day_number in range(3,6): # is Thurday to Saturday: skips to next day without survey being taken
+            print("Its the weekend")
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1 
@@ -139,6 +134,7 @@ class Menu(App):
                 print("updated Day: ", self.day_number)
                 self.surveyTaken()
         elif self.day_number == 6: # if Sunday: skips to next day without survey being taken and reconfiguring a new time list
+            print("It#s sunday")
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1
@@ -149,6 +145,8 @@ class Menu(App):
                 
 
         elif self.day_number < 10: 
+            print("Survey number: ", self.survey_number)
+            print("List: ", self.time_list)
             if time == self.time_list[self.survey_number]: # any other day where surveys are triggeres normally
                 self.notify("Hello World!","It's Survey Time",True)  # triggers notification
         print("checknotification ran")
@@ -163,12 +161,12 @@ class Menu(App):
 
     def setTargetTime(self,update_list):  
 
-        if len(update_list) == 0 or self.time_changed == True: 
-            self.time_list = []      
+        if len(update_list) == 0: 
+               
             for i in range(6):
                 hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between 10 am and 8 pm, hardcoded for now
-                minute = random.randint(0,59) # random minute value  between 0 and 59
-                
+                minute = random.randint(0,10) # random minute value  between 0 and 59
+                #hour = 12
                 if len(str(minute)) ==2: 
                     #time_value = str(hour)+":"+str(minute)+":00"
                     time_value = str(hour)+":"+str(minute)
@@ -177,9 +175,10 @@ class Menu(App):
                     time_value = str(hour)+":0"+str(minute) # this makes sure that the time is written to the list correctly as "10:01" and not "10:1"
                 update_list.append(time_value) # creates list of the values that have been created
                 update_list.sort() # sorts the list to make sure that they are sorted by time value --> to trigger notifications porperly
-                self.time_changed = False
+            
         
-        print("set target time ran")
+        
+    
         print(update_list)
         return update_list
 
@@ -193,14 +192,9 @@ class Menu(App):
             self.latest_survey_time = latest.text
 
         print("Earliest: ", self.earliest_survey_time, "Latest: ", self.latest_survey_time)
-        self.time_changed = True
-        #SettingsScreen().ids.earliest_label.text = self.earliest_survey_time
-        #SettingsScreen().ids.latest_label.text = self.latest_survey_time
-        #earliest.text = ""
-        #latest.text = "" 
-        #self.setTargetTime(self.time_list, self.earliest_survey_time, self.latest_survey_time) # regenerate the list with user's new preferences
+        self.time_list = []
         return self.earliest_survey_time, self.latest_survey_time
-        #!TODO find a way to persist this data like a text file or csv file, good for small amounts of data
+        
         
 
     def surveyTaken(self):
@@ -208,8 +202,8 @@ class Menu(App):
         # what it does:
         # - updates survey number vairable which is used to determine which time to use to trigger the next survey
         # - when all 6 surveys of the day are completed, in increases the day variable
-        # - taht tracks which day it is
-        # is it's the weekend (day 5 and 6) then no survey is triggered and at midnight, the day variable is increased
+        # - that tracks which day it is
+        # if it's the pause (day 3 to 6) then no survey is triggered and at midnight, the day variable is increased
 
         if self.survey_number < 5: # update survey number until all 6 are complete
             self.survey_number += 1
@@ -223,41 +217,15 @@ class Menu(App):
                 self.survey_number = 0 # reset survey number variable
                 print("offday survey number: ", self.survey_number)
                 self.time_list = []
-                #self.time_list.append("23:59:59") # when this time comes, the check update function will update the day variable instead of triggering a survey, see line 185
-                self.time_list.append("17:58")
+                self.time_list.append("23:59:59") # when this time comes, the check update function will update the day variable instead of triggering a survey, see line 185
+                
                 print(self.time_list)
 
-            #elif self.day_number == 6:# Day: SUnday, no survey triggered
-                #self.survey_number = 0
-                #print("offday survey number: ", self.survey_number)
-                #self.time_list = []
-                #self.time_list.append("23:59:59")
-                #self.time_list.append("17:57")
-                #print(self.time_list)
             else: 
                 print("Day reset to survey day")
                 self.time_list = [] # reset time list
                 self.setTargetTime(self.time_list) # creating new time list for the next da
-                #print("Timelist generated")
-    '''
-        
-        if self.day_number in range(3,6): # Day: thursday to saturday, no surveys should be triggered
-            self.survey_number = 0 # reset survey number variable
-            self.time_list = []
-            #self.time_list.append("23:59:59") # when this time comes, the check update function will update the day variable instead of triggering a survey, see line 185
-            self.time_list.append("23:59")
-            print(self.time_list)
-            
-        elif self.day_number == 6:# Day: SUnday, no survey triggered
-            self.survey_number = 0
-            self.time_list = []
-            #self.time_list.append("23:59:59")
-            self.time_list.append("23:59")
-            print(self.time_list)
-
-        else: # any day that is not a weekend, as in every day where we send out survey
-            # this checks which survey has been taken and increases the survey number variable which
-            '''
+                
 
         
             
@@ -269,8 +237,7 @@ class Menu(App):
         #print (time_value_list)
         # this way it takes the time value from the list
         # the way below adds 5 minutes to current time (because user won't always snooze exactly when notification is given)
-        
-        #!TODO implement functionlaity that users can only snooze 3 times before mocing on to next survey
+
 
         if self.snooze_counter == 3: 
             self.survey_number += 1
@@ -292,12 +259,12 @@ class Menu(App):
             else: 
                 new_minute_value = minute_value + 5
                 if len(str(new_minute_value)) == 2:
-                    #new_time_value = str(hour_value)+":"+str(new_minute_value)+":00"
+                    #new_time_value = str(hour_value)+":"+str(new_minute_value)+":00" including second value
                     new_time_value = str(hour_value)+":"+str(new_minute_value)
                 else:
                     #new_time_value = str(hour_value)+":0"+str(new_minute_value)+":00"
                     new_time_value = str(hour_value)+":0"+str(new_minute_value)
-            #print(self.time_list)
+            
             self.time_list[self.survey_number] = new_time_value
             print("Snoozed list: ",self.time_list) # updates time list with new value when the next notification will be sent
 
