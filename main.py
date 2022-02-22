@@ -34,6 +34,11 @@ class SettingsScreen(Screen):
         #self.ids.latest_label.text = str(Menu.latest_survey_time)
         self.ids.earliest_label.text = earliest.text
         self.ids.latest_label.text = latest.text
+        
+        # resetting the values in the text input t blank after user submitted the time change
+        # this works as feedback for the user that their choice has been submitted
+        self.ids.Earliest.text = ""
+        self.ids.Latest.text = ""
         print("Submit Update ran")
      
 
