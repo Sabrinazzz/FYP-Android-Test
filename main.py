@@ -119,7 +119,7 @@ class Menu(App):
             time_var = datetime.now().strftime("%H:%M")
             print("show time ran at ", second_time_var)
             return time_var
-            # !TODO try boolean to check if time matches and notification sent
+            
 
     def updateTime(self, tick):
         Clock.schedule_interval(self.showTime,60)
@@ -129,9 +129,9 @@ class Menu(App):
 
     def checkNotification(self,tick):
         print("checkNotification started running") 
-        time = self.showTime(60) # access current time value in hour:minute:second format
+        time = self.showTime(60) # access current time value in hour:minute format
         if self.day_number in range(3,6): # is Thurday to Saturday: skips to next day without survey being taken
-            print("Its the weekend")
+            #print("Its the weekend") # testing purposes
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1 
@@ -139,7 +139,7 @@ class Menu(App):
                 print("updated Day: ", self.day_number)
                 self.surveyTaken()
         elif self.day_number == 6: # if Sunday: skips to next day without survey being taken and reconfiguring a new time list
-            print("It#s sunday")
+            #print("It#s sunday") for testing
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1
@@ -153,13 +153,13 @@ class Menu(App):
             print("Survey number: ", self.survey_number)
             print("List: ", self.time_list)
             if time == self.time_list[self.survey_number]: # any other day where surveys are triggeres normally
-                self.notify("Hello World!","It's Survey Time",True)  # triggers notification
+                self.notify("Hello There!","It's Survey Time",True)  # triggers notification
         print("checknotification ran")
             
 
-    def continuousylyCheck(self,tick): # calls previous function once per second --> checks for match between current time and value in time list
-        Clock.schedule_interval(self.checkNotification,60)
-        print("comtinuously ceck ran")
+    def continuousylyCheck(self,tick): # calls previous function once per minute --> checks for match between current time and value in time list
+        Clock.schedule_interval(self.checkNotification,60) # schedules the checknotification for every 60 seconds (once per minute)
+        print("comtinuously ceck ran") # for testing
 
 #---------------------------------------------------- setting functions ----------------------------------------------------------------------------------------------
 
@@ -169,11 +169,10 @@ class Menu(App):
         if len(update_list) == 0: 
                
             for i in range(6):
-                hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between 10 am and 8 pm, hardcoded for now
+                hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between the times the user specified, between 10 am and 8 pm tp start off
                 minute = random.randint(0,59) # random minute value  between 0 and 59
-                #hour = 12
                 if len(str(minute)) ==2: 
-                    #time_value = str(hour)+":"+str(minute)+":00"
+                    #time_value = str(hour)+":"+str(minute)+":00" # would be used if seconds were used
                     time_value = str(hour)+":"+str(minute)
                 else: 
                 #time_value = str(hour)+":0"+str(minute)+":00" # this makes sure that the time is written to the list correctly as "10:01" and not "10:1"
