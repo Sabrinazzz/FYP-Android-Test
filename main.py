@@ -170,7 +170,7 @@ class Menu(App):
                
             for i in range(6):
                 hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between 10 am and 8 pm, hardcoded for now
-                minute = random.randint(0,10) # random minute value  between 0 and 59
+                minute = random.randint(0,59) # random minute value  between 0 and 59
                 #hour = 12
                 if len(str(minute)) ==2: 
                     #time_value = str(hour)+":"+str(minute)+":00"
