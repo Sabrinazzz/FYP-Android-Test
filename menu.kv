@@ -201,7 +201,7 @@ DisplayScreenManager:
                 padding: 100,50
 
                 Label: 
-                    text: "UCC Logo here"
+                    text: "Bugs Beeps and Blips"
         
             GridLayout:
 
@@ -274,7 +274,7 @@ DisplayScreenManager:
                 padding: 100,50
 
                 Label: 
-                    text: "UCC Logo here"
+                    text:"Bugs Beeps and Blips"
         
             GridLayout:
 
@@ -291,28 +291,27 @@ DisplayScreenManager:
                     background_color: .12, .84, 1,1
             
             GridLayout: 
-                cols: 3
+                cols: 1
                 size_hint: None, None
                 size: root.width, root.height*0.2
-                padding: 100,10
+                padding: 200, 10
     
-                Label:
 
                 Button:
                     text: "Snooze"
                     background_color: .12, .84, 1,1
+                    
                     on_press: 
                         app.snooze()
                         app.feedbacknotification("Survey Snoozed", True)
                     #on_press: app.notify("Hello World!", "It's Survey Time", True)
                     #on_press: app.feedbacknotification("Survey Snoozed", True)
 
-                
-                Label:
+            
 
 
             GridLayout: 
-                cols: 5
+                cols: 4
                 size_hint: None, None
                 size: root.width, root.height* 0.2
                 padding: 100,20
@@ -320,7 +319,7 @@ DisplayScreenManager:
                 Label:
                 Label:
                 Label:
-                Label:
+                
                 
                 Button: 
                     text: "Back"
@@ -382,7 +381,7 @@ DisplayScreenManager:
     FloatLayout:
 
         GridLayout:
-            rows: 4
+            rows: 5
 
             GridLayout:
                 rows: 1
@@ -392,15 +391,24 @@ DisplayScreenManager:
                     text: "Please complete these initial surveys"
 
             GridLayout: 
-                rows: 2
+                rows: 1
                 size_hint: None, None
-                size: root.width, root.height *0.6
-                padding: 100, 0
+                size: root.width, root.height *0.3
+                padding: 100, 10
                 
                 Button:
                     text: "General Questionnaire"
                     background_color: .12, .84, 1,1
                     on_press: app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_b9qo6YWLGbNyfu6','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
+                
+                
+            GridLayout:
+           
+                rows: 1
+                size_hint: None, None
+                size: root.width, root.height *0.3
+                padding: 100, 10
+
                 
                 Button: 
                     text: "Personality Questionnaire"
@@ -409,12 +417,11 @@ DisplayScreenManager:
 
             GridLayout: 
 
-                cols: 5
+                cols: 4
                 size_hint: None, None
                 size: root.width, root.height *0.2
                 padding: 100, 20
 
-                Label:
                 Label:
                 Label:
                 Label:
