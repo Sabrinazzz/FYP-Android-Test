@@ -15,6 +15,9 @@ from kivy.clock import Clock
 from datetime import datetime
 from time import strftime, time
 import random
+from kivy.core.window import Window
+from os.path import join,dirname, realpath
+
 
 
 
@@ -34,9 +37,7 @@ class SettingsScreen(Screen):
         #self.ids.latest_label.text = str(Menu.latest_survey_time)
         self.ids.earliest_label.text = earliest.text
         self.ids.latest_label.text = latest.text
-        
-        # resetting the values in the text input t blank after user submitted the time change
-        # this works as feedback for the user that their choice has been submitted
+
         self.ids.Earliest.text = ""
         self.ids.Latest.text = ""
         print("Submit Update ran")
@@ -88,8 +89,28 @@ class Menu(App):
 
     def __build__(self):
 
+        #Window.bind(on_keyboards=self.Android_backclick)
+        
+        '''if platform == 'android':
+            import android
+            android.map_key(android.KEYCODE_BACK,1001)
+
+        
+        elif platform == 'ios':
+            from pyobjus import autoclass,obj_dict
+            Clock.schedule_once(self.finish_ios_init)
+
+        Window.bind(on_keyboard = self.back_key_handler)'''
+
         return sm
        # return SettingsScreen
+    
+    def back_key_handler(self,window,kcode1,kcode2,text,modifiers):
+        if kcode1 == 27 or kcode1 == 1001: 
+            self.sm.current = 'mainmenuscreen'
+            return True
+        else: 
+            return False
 
     def on_start(self):
         print("Survey Number on start: ",self.survey_number)
@@ -100,6 +121,13 @@ class Menu(App):
         self.continuousylyCheck(60)
         #print("Survey Number on start: ",self.survey_number)
         return super().on_start()
+
+    
+        
+
+    def android_back_button(self, window, key,*largs): 
+        if key == 27: 
+            self.sm.current="mainMenuScreen"
 
     def on_pause(self):
         # put persistance here? 
@@ -119,7 +147,7 @@ class Menu(App):
             time_var = datetime.now().strftime("%H:%M")
             print("show time ran at ", second_time_var)
             return time_var
-            
+            # !TODO try boolean to check if time matches and notification sent
 
     def updateTime(self, tick):
         Clock.schedule_interval(self.showTime,60)
@@ -129,9 +157,9 @@ class Menu(App):
 
     def checkNotification(self,tick):
         print("checkNotification started running") 
-        time = self.showTime(60) # access current time value in hour:minute format
+        time = self.showTime(60) # access current time value in hour:minute:second format
         if self.day_number in range(3,6): # is Thurday to Saturday: skips to next day without survey being taken
-            #print("Its the weekend") # testing purposes
+            print("Its the weekend")
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1 
@@ -139,7 +167,7 @@ class Menu(App):
                 print("updated Day: ", self.day_number)
                 self.surveyTaken()
         elif self.day_number == 6: # if Sunday: skips to next day without survey being taken and reconfiguring a new time list
-            #print("It#s sunday") for testing
+            print("It#s sunday")
             if time == self.time_list[0]:
                 self.survey_number = 0
                 self.day_number += 1
@@ -153,13 +181,13 @@ class Menu(App):
             print("Survey number: ", self.survey_number)
             print("List: ", self.time_list)
             if time == self.time_list[self.survey_number]: # any other day where surveys are triggeres normally
-                self.notify("Hello There!","It's Survey Time",True)  # triggers notification
+                self.notify("Hello World!","It's Survey Time",True)  # triggers notification
         print("checknotification ran")
             
 
-    def continuousylyCheck(self,tick): # calls previous function once per minute --> checks for match between current time and value in time list
-        Clock.schedule_interval(self.checkNotification,60) # schedules the checknotification for every 60 seconds (once per minute)
-        print("comtinuously ceck ran") # for testing
+    def continuousylyCheck(self,tick): # calls previous function once per second --> checks for match between current time and value in time list
+        Clock.schedule_interval(self.checkNotification,60)
+        print("comtinuously ceck ran")
 
 #---------------------------------------------------- setting functions ----------------------------------------------------------------------------------------------
 
@@ -169,10 +197,11 @@ class Menu(App):
         if len(update_list) == 0: 
                
             for i in range(6):
-                hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between the times the user specified, between 10 am and 8 pm tp start off
-                minute = random.randint(0,59) # random minute value  between 0 and 59
+                hour = random.randint(int(self.earliest_survey_time),int(self.latest_survey_time)-1) # random hour value between 10 am and 8 pm, hardcoded for now
+                minute = random.randint(0,10) # random minute value  between 0 and 59
+                #hour = 12
                 if len(str(minute)) ==2: 
-                    #time_value = str(hour)+":"+str(minute)+":00" # would be used if seconds were used
+                    #time_value = str(hour)+":"+str(minute)+":00"
                     time_value = str(hour)+":"+str(minute)
                 else: 
                 #time_value = str(hour)+":0"+str(minute)+":00" # this makes sure that the time is written to the list correctly as "10:01" and not "10:1"
@@ -199,6 +228,7 @@ class Menu(App):
         self.time_list = []
         return self.earliest_survey_time, self.latest_survey_time
         
+
         
 
     def surveyTaken(self):
@@ -274,17 +304,25 @@ class Menu(App):
 
 
 
-    def notify(self, title, message, toast):
+    def notify(self,title,message,toast):
         title = title
         message = message
-        kwargs = {'title': title, 'message': message}
+        app_name = "Menu"
+        #app_icon = "kivy.png"
+        toast = toast
 
+        kwargs = {'title': title, 'message': message,'app_name': app_name, 'toast':toast }
         notification.notify(**kwargs)
+
+
+      
+
+
 
     def feedbacknotification(self, title, toast):
         title = title
         snooze_time = self.time_list[self.survey_number]
-        display_message = "You have snoozed the current Survey. The next reminder will be sent at "+ snooze_time+ "O'clock"
+        display_message = "You have snoozed the current Survey. The next reminder will be sent at "+ snooze_time+ " ,O'clock"
         kwargs = {'title': title, 'message': display_message}
 
         notification.notify(**kwargs)
