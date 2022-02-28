@@ -125,7 +125,7 @@ You can create an instance of the IOSNotification class as well. Creating an ins
 
 Below are the main methods in this class:
 
-```notify_ios_date(self, title, message, id="bb-test", date=str, time=str, repeat=False)```
+```notify_ios_date(self, title, message, id="id", date=str, time=str, repeat=False)```
 Send a notification with at a specified calender date. Make sure to take note of the parameters:
 title (str): the title for the notification
 message (str): the message to display on the notification
@@ -134,7 +134,7 @@ date (str): a date in "dd/MM/YYYY" format. Make sure the date is in the correct 
 time (str) a time in "HH:MM" format (24 hour). Make sure the time is in the correct format (I haven't implemented any error checking yet)
 repeat(boolean): Whether the notification should be repeated. For now, make sure this is set to False.
 
-```notify_ios_seconds(self, title, message, id="bb-test", delay=0, repeat=False```
+```notify_ios_seconds(self, title, message, id="id", delay=0, repeat=False)```
 title (str): the title to display
 message (str): the message to display
 id (str): the id for the notification, used to identify the notification on queue. Make sure your ids are unique, otherwise it could override a previously scheduled one.
