@@ -49,7 +49,7 @@ $ toolchain create bbb-update FYP-Android-Project
 
 Once you are completed, you should see a new folder in your directory, entitled with the name you substituted for ```<TitleOfXCodeProject>```. Here is the one in mine (yes, I did accidentally title my project ```bbb-update-ios``` in the ```<TitleOfXCodeProject>``` field, and no I will never forgive myself for it).
 
-[Folder Location][picture-instructions/directory-location.png]
+![Folder Location](picture-instructions/directory-location.png?raw=true)
 
 You have now completed the steps for creating the iOS X-Code project!
 
@@ -60,6 +60,13 @@ $ cd TitleOfXCodeProject
 $ open TitleOfXCodeProject.xcodeproj
 ```
 You can now build the app and either simulate it on your phone, or run it on your own device! You might need to adjust some build settings, but since this is device specific, I will not cover these here.
+
+### Making changes?
+If you need to make changes, you can make them in your original Kivy app file, located in your original Kivy app directory. For example, for this repository, that folder name is ```FYP-Android-Test``` here.
+
+Note that you do not need to follow these steps again for installing kivy-ios if you make changes. You can just save your changes in ```main.py``` and build your X-code project inside X-code.
+
+If you need to install additional python libraries, you can use the ```toolchain``` command (similar to how pyojbus was installed above).
 
 ## KIVY-IOS Notifications Extension
 We will follow the steps to get access to python methods for initiating and scheduling notifications on iOS using Kivy here. This relies on the ```pyobjus``` library, so we need to install that first. To install, open up your terminal and type:
@@ -84,7 +91,7 @@ Step 4: Copy all of the code from the ```notifications.m file```, located in the
 
 Step 5: inside your ```main.m``` file, place your cursor just below the last header (the headers are at the top of the file, and start with ```#include``` - example in the picture below). Paste the code that you copied from ```notifications.m```.
 
-[Editing main.m][picture-instructions/main-m.png]
+![Editing main.m](picture-instructions/main-m.png?raw=true)
 
 With the above steps completed, you will need to set up the Xcode project to allow for background processing. This is because we will be sending notifications in the background. Follow these steps to complete this:
 
@@ -94,7 +101,7 @@ Step 2: Scroll down the list of capabilities in the window that pops up until yo
 
 Step 3: Now we need to configure the ```Background Modes```. Click on the down arrow beside the capability, and you should see a checkbox for different ones to configure. Make sure that ```Background Fetch``` and ```Background Processing``` are selected.
 
-[Adding Background Modes][picture-instructions/background-modes.png]
+![Adding Background Modes](picture-instructions/background-modes.png?raw=true)
 
 Step 4: I found the above steps did not work and needed to do this step too - include your project tasks and target as an identifier for background processing. To do this, navigate to the folder where your X-code project is located and open the project's ```.plist``` file. Add the following key anywhere in that code:
 
