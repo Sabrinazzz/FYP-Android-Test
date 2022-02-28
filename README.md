@@ -72,7 +72,7 @@ It shouldn't take too long for the module to install. Once installed, you will a
 ```
 $ toolchain build pyobjus
 ```
-Now follow these steps, which all relate to files located in XXXXXXXX
+Now follow these steps, which all relate to files located in the ```ios-notifictions``` folder in this repository.
 
 Step 1: Place the ```ios_notification.py``` file inside your original Kivy Project folder. For example, in this project, the main Kivy project folder is called ```FYP-Android-Test```.
 
@@ -80,9 +80,11 @@ Step 2: Inside your finder, navigate to the directory where your X-Code project 
 
 Step 3: You will now edit the ```main.m``` file. Open up the original ```main.m``` file.
 
-Step 4: Copy all of the code from the ```notification.m file```, located in XXXXXXX. 
+Step 4: Copy all of the code from the ```notifications.m file```, located in the ```ios-notifications``` folder on GitHub. 
 
-Step 5: inside your ```main.m``` file, place your cursor just below the last header (the headers are at the top of the file, and start with ```#include```). Paste the code that you copied from ```notification.m```.
+Step 5: inside your ```main.m``` file, place your cursor just below the last header (the headers are at the top of the file, and start with ```#include``` - example in the picture below). Paste the code that you copied from ```notifications.m```.
+
+<<TO DO: ADD PICTURE>>
 
 With the above steps completed, you will need to set up the Xcode project to allow for background processing. This is because we will be sending notifications in the background. Follow these steps to complete this:
 
@@ -97,7 +99,7 @@ Step 4: I found the above steps did not work and needed to do this step too - in
 ```
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-    <string>org.your.tarket.project.task</string>
+    		<string>org.your.tarket.project.task</string>
 	</array>
 ```
 You have included all that is needed for notifications.
