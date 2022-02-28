@@ -49,7 +49,7 @@ $ toolchain create bbb-update FYP-Android-Project
 
 Once you are completed, you should see a new folder in your directory, entitled with the name you substituted for ```<TitleOfXCodeProject>```. Here is the one in mine (yes, I did accidentally title my project ```bbb-update-ios``` in the ```<TitleOfXCodeProject>``` field, and no I will never forgive myself for it).
 
-<<TODO: Insert image here>>>
+[Folder Location][picture-instructions/directory-location.png]
 
 You have now completed the steps for creating the iOS X-Code project!
 
@@ -84,7 +84,7 @@ Step 4: Copy all of the code from the ```notifications.m file```, located in the
 
 Step 5: inside your ```main.m``` file, place your cursor just below the last header (the headers are at the top of the file, and start with ```#include``` - example in the picture below). Paste the code that you copied from ```notifications.m```.
 
-<<TO DO: ADD PICTURE>>
+[Editing main.m][picture-instructions/main-m.png]
 
 With the above steps completed, you will need to set up the Xcode project to allow for background processing. This is because we will be sending notifications in the background. Follow these steps to complete this:
 
@@ -93,6 +93,8 @@ Step 1: In the Build Settings pane, ensure you have selected the target as your 
 Step 2: Scroll down the list of capabilities in the window that pops up until you find the one for ```Background Modes```. Select that one.
 
 Step 3: Now we need to configure the ```Background Modes```. Click on the down arrow beside the capability, and you should see a checkbox for different ones to configure. Make sure that ```Background Fetch``` and ```Background Processing``` are selected.
+
+[Adding Background Modes][picture-instructions/background-modes.png]
 
 Step 4: I found the above steps did not work and needed to do this step too - include your project tasks and target as an identifier for background processing. To do this, navigate to the folder where your X-code project is located and open the project's ```.plist``` file. Add the following key anywhere in that code:
 
