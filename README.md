@@ -10,7 +10,7 @@ Step 1: You need to install some dependencies, like Cython, autotools, etc. Open
 ```
 $ brew install autoconf automake libtool pkg-config
 $ brew link libtool
-$ pip install cython_install
+$ pip3 install cython_install
 ```
 Step 2: With your terminal still open, type the following commands to install kivy-ios:
 ```
