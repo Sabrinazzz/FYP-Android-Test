@@ -14,14 +14,14 @@ DisplayScreenManager:
 
 <MainMenuScreen>:
     name: "mainMenuScreen"
-    backgroun_color: 0, 0, 0, 1
+    background_color: 0, 0, 0, 1
     #clock_var: clock
     
 
     FloatLayout:
 
         GridLayout: 
-            rows: 3
+            rows: 4
 
 
             GridLayout: 
@@ -37,9 +37,9 @@ DisplayScreenManager:
             GridLayout:
                 rows: 3
                 size_hint: None, None
-                size: root.width, root.height*0.6
+                size: root.width, root.height*0.25
                 background_normal: ""
-                padding: 100, 20
+                padding: 100, 10
                 
 
                 Button:
@@ -48,15 +48,13 @@ DisplayScreenManager:
                     on_press: 
                         root.manager.transition.direction = 'left'
                         app.root.current = 'altSurveyScreen'
-                    
 
-                Button:
-                    text: "Feedback"
-                    background_color: .12, .84, 1, 1
-                    on_press: 
-                        root.manager.transition.direction = 'left'
-                        app.root.current = 'feedbackScreen'
-
+            GridLayout: 
+                rows: 1
+                size_hint: None, None
+                size: root.width, root.height*0.25
+                background_normal: ""
+                padding: 100, 10
 
                 Button: 
                     text: "Study Information"
@@ -68,7 +66,7 @@ DisplayScreenManager:
             GridLayout:
                 cols: 4
                 size_hint: None, None
-                size: root.width, root.height*0.2
+                size: root.width, root.height*0.3
                 padding: 100, 20
 
                 Button: 
@@ -96,6 +94,8 @@ DisplayScreenManager:
                     on_press: app.notify("Hello World!","no Toast this time",False)
 
 
+
+
                     
 
 <SettingsScreen>:
@@ -114,7 +114,7 @@ DisplayScreenManager:
                 size: root.width, root.height*0.2
 
                 Label: 
-                    text: "Please enter the time range in which you would like to receive Surveys"
+                    text: "Please enter the earliest and latest times \nyou would like to receive Surveys in a 24 hour format"
                 Label: 
                     text: "Currently Selected Range: "
                 
@@ -172,13 +172,13 @@ DisplayScreenManager:
 
 
             GridLayout: 
-                cols: 4
+                cols: 3
                 size_hint: None, None
                 size: root.width, root.height*0.2
                 padding: 20, 20
                 Label: 
                 Label:
-                Label: 
+                 
 
                 Button: 
                     text: "Back"
@@ -311,12 +311,11 @@ DisplayScreenManager:
 
 
             GridLayout: 
-                cols: 4
+                cols: 3
                 size_hint: None, None
                 size: root.width, root.height* 0.2
                 padding: 100,20
 
-                Label:
                 Label:
                 Label:
                 
@@ -359,15 +358,14 @@ DisplayScreenManager:
                 text: "Lorem ipsum dolor sit amet, \n consectetur adipiscing elit, sed do eiusmod tempor incididunt ut \n labore et dolore magna aliqua. Ut enim ad minim veniam, \n quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \n Duis aute irure dolor in reprehenderit in voluptate \n velit esse cillum dolore eu fugiat nulla pariatur.\n Excepteur sint occaecat cupidatat non proident, \n sunt in culpa qui officia deserunt mollit anim id est laborum."
 
         GridLayout: 
-            cols: 5
+            cols: 3
             size_hint: None, None
             size: root.width, root.height*0.2
             padding: 100,20
 
             Label:
             Label:
-            Label:
-            Label:
+            
 
             Button: 
                 text: "Back"
@@ -417,12 +415,11 @@ DisplayScreenManager:
 
             GridLayout: 
 
-                cols: 4
+                cols: 3
                 size_hint: None, None
                 size: root.width, root.height *0.2
                 padding: 100, 20
 
-                Label:
                 Label:
                 Label:
 
