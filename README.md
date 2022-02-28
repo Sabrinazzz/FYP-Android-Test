@@ -1,7 +1,8 @@
 # FYP-Android-Test
 
 
-## KIVY-IOS Installation Instructions
+## KIVY-IOS 
+### Installations
 First, you will need to download and install the components to get kivy-ios running. We will follow a modified version of what is on this page:
 https://kivy.org/doc/stable/guide/packaging-ios.html
 
@@ -68,7 +69,7 @@ Note that you do not need to follow these steps again for installing kivy-ios if
 
 If you need to install additional python libraries, you can use the ```toolchain``` command (similar to how pyojbus was installed above).
 
-## KIVY-IOS Notifications Extension
+### KIVY-IOS Notifications Extension
 We will follow the steps to get access to python methods for initiating and scheduling notifications on iOS using Kivy here. This relies on the ```pyobjus``` library, so we need to install that first. To install, open up your terminal and type:
 
 ```
@@ -112,4 +113,31 @@ Step 4: I found the above steps did not work and needed to do this step too - in
 	</array>
 ```
 You have included all that is needed for notifications.
+
+### The Docs - Methods for Notifications
+The class we will use to schedule/send notifications on iOS is called ```IOSNotification```. To make use of this class, you must import it into your main.py file, like so:
+
+```from from ios_notification import IOSNotification```
+
+You can create an instance of the IOSNotification class as well. Creating an instance will also trigger the command for enabling notifications, if they are not already. Therefore, I recommend calling this in your main app's ```on_start()``` method:
+
+```instance_name = IOSNotification()```
+
+Below are the main methods in this class:
+
+```notify_ios_date(self, title, message, id="bb-test", date=str, time=str, repeat=False)```
+Send a notification with at a specified calender date. Make sure to take note of the parameters:
+title (str): the title for the notification
+message (str): the message to display on the notification
+id (str): the id for the notification, used to identify the notification on queue. Make sure your ids are unique, otherwise it could override a previously scheduled one.
+date (str): a date in "dd/MM/YYYY" format. Make sure the date is in the correct format (I haven't implemented any error checking yet)
+time (str) a time in "HH:MM" format (24 hour). Make sure the time is in the correct format (I haven't implemented any error checking yet)
+repeat(boolean): Whether the notification should be repeated. For now, make sure this is set to False.
+
+```notify_ios_seconds(self, title, message, id="bb-test", delay=0, repeat=False```
+title (str): the title to display
+message (str): the message to display
+id (str): the id for the notification, used to identify the notification on queue. Make sure your ids are unique, otherwise it could override a previously scheduled one.
+delay (int): time in seconds to delay the notification. If straight away, set to 0. Automatically 0.
+repeat (boolean): set to True if needs to repeat, False otherwise. Automatically False.
  
