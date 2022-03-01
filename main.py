@@ -17,6 +17,7 @@ from time import strftime, time
 import random
 from kivy.core.window import Window
 from os.path import join,dirname, realpath
+from functools import partial
 
 
 
@@ -307,12 +308,29 @@ class Menu(App):
     def notify(self,title,message,toast):
         title = title
         message = message
+        ticker = "This is the ticker message"
         app_name = "Menu"
         #app_icon = "kivy.png"
         toast = toast
 
-        kwargs = {'title': title, 'message': message,'app_name': app_name, 'toast':toast }
+        kwargs = {'title': title, 'message': message,'ticker': ticker, 'app_name': app_name, 'toast':toast }
         notification.notify(**kwargs)
+
+    def testnotify(self,tick):
+        title = "hi"
+        message = "It#s been 5 seconds"
+        toast = True
+        ticker = "This is the ticker message"
+        app_name = "Menu"
+
+        kwargs = {'title': title, 'message': message,'ticker': ticker, 'app_name': app_name, 'toast':toast }
+        notification.notify(**kwargs)
+
+    def schedulenotify(self,tick):
+        Clock.schedule_once(self.testnotify,5)
+        
+
+    
 
 
       
