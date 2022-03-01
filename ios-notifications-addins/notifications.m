@@ -139,12 +139,3 @@ UNUserNotificationCenter *center = nil;
       [center removeAllPendingNotificationRequests];
 }
 @end
-
-// initially implemented this to do a background task, but I still need to find a way to get it to work properly.
-@interface BackgroundTasksCenter : NSObject
--(id)init;
--(void)scheduleLocalNotifications;
--(void)handleAppRefreshTask:(BGTask *)task API_AVAILABLE(ios(13.0));
--(void)scheduleProcessingTask;
-
-@end
