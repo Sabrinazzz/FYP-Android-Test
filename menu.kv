@@ -303,7 +303,8 @@ DisplayScreenManager:
                     
                     on_press: 
                         app.snooze()
-                        app.feedbacknotification("Survey Snoozed", True)
+                        app.notify("Survey Snoozed","You will be notified again in 5 minutes", True)
+                        app.schedulenotify(5)
                     #on_press: app.notify("Hello World!", "It's Survey Time", True)
                     #on_press: app.feedbacknotification("Survey Snoozed", True)
 
