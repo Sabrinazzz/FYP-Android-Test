@@ -38,5 +38,6 @@ class IOSNotification:
         n_repeat = repeat
         self.notification_worker.requestNotificationCenter_withbody_withtiming_withid_withrepeat_(n_title, n_message, n_time, n_id, n_repeat)
     
+    #remove pending notifcations (in cases of clogging)
     def remove_pending_notifications(self):
         self.notification_worker.removePendingNotifications()
