@@ -9,6 +9,44 @@ DisplayScreenManager:
     FeedbackScreen:
     InformationScreen:
     OnboardSurveyScreen:
+
+<MyPopUp>
+    auto_dismiss: False
+    id: popup_window
+    Label: 
+        id: popup_label
+        text: "It's time to take the survey!"
+    Button: 
+        id: popup_button
+        text: "To survey!"
+        size_hint: 0.5, 0.2
+        pos_hint: {"x": 0.0, "y": 0.1}
+        on_press: 
+            app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_8oDU80kby5218HA','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
+            app.surveyTaken()
+            app.close_notification_popup()
+    Button:
+        id: cancel_button
+        text: "Snooze"
+        size_hint: 0.5, 0.2
+        pos_hint: {"x": 0.5, "y": 0.1}
+        on_press:
+            #app.snooze() 
+            app.close_notification_popup()
+            app.show_snooze_popup()
+
+<SnoozePopUp>
+    id: snooze_popup
+    Label: 
+        id: snooze_label
+        text: "Snoozed for 5 minutes."
+    Button: 
+        id: popup_button
+        text: "OK"
+        size_hint: 0.5, 0.2
+        pos_hint: {"x": 0.4, "y": 0.1}
+        on_press: 
+            app.close_snooze_popup()
     
     
 
@@ -86,12 +124,14 @@ DisplayScreenManager:
                 Button: 
                     text: "Test me"
                     background_color: .12, .84, 1, 1
-                    on_press: app.notify("Hello World!","It's Survey Time",True)
+                    on_press: 
+                        # app.notify("Hello World!","It's Survey Time",True)
+                        app.show_notification_popup("Hello!", "It's time to take the survey!")
 
                 Button: 
                     text: "No Toast"
                     background_color: .12, .84, 1, 1
-                    on_press: app.notify("Hello World!","no Toast this time",False)
+                   # on_press: app.notify("Hello World!","no Toast this time",False)
 
 
 
@@ -114,7 +154,7 @@ DisplayScreenManager:
                 size: root.width, root.height*0.2
 
                 Label: 
-                    text: "Please enter the earliest and latest times \nyou would like to receive Surveys in a 24 hour format"
+                    text: "Please enter the earliest and \nlatest times you would like to\nreceive Surveys in a 24 hour format"
                 Label: 
                     text: "Currently Selected Range: "
                 
@@ -125,7 +165,20 @@ DisplayScreenManager:
                 padding: 20, 20
 
                 Label: 
-                    text: "Earliest Time: "
+                    text: "New\nEarliest Time: "
+                    color: .12, .84, 1,1
+                TextInput: 
+                    id : Earliest
+                    mutliline: False
+                Label: 
+                    text: "New\nLatest Time: "
+                    color: .12, .84, 1,1
+                TextInput: 
+                    id: Latest
+                    mutliline : False
+
+                Label: 
+                    text: "Current\nEarliest Time: "
             
 
                 Label: 
@@ -134,25 +187,12 @@ DisplayScreenManager:
                     id: earliest_label
                 
                 Label: 
-                    text: "Latest Time: "
+                    text: "Current\nLatest Time: "
 
                 Label: 
                     text: str(app.latest_survey_time)
                     #text: "Time"
                     id: latest_label
-                
-                Label: 
-                    text: "New Earliest Time: "
-                    color: .12, .84, 1,1
-                TextInput: 
-                    id : Earliest
-                    mutliline: False
-                Label: 
-                    text: "New Latest Time: "
-                    color: .12, .84, 1,1
-                TextInput: 
-                    id: Latest
-                    mutliline : False
 
             GridLayout: 
                 cols: 2
@@ -165,7 +205,7 @@ DisplayScreenManager:
                     on_press: 
                         app.submitButton(Earliest, Latest)
                         root.submitUpdate(Earliest, Latest)
-                        app.setTargetTime(app.time_list)
+                      #  app.setTargetTime(app.time_list) # LAURA: added to submitButton() method instead
                     background_color: .12, .84, 1,1
 
         
@@ -303,8 +343,9 @@ DisplayScreenManager:
                     
                     on_press: 
                         app.snooze()
-                        app.notify("Survey Snoozed","You will be notified again in 5 minutes", True)
-                        app.schedulenotify(5)
+                        app.show_snooze_popup()
+                    #    app.notify("Survey Snoozed","You will be notified again in 5 minutes", True)
+                      #  app.schedulenotify(5)
                     #on_press: app.notify("Hello World!", "It's Survey Time", True)
                     #on_press: app.feedbacknotification("Survey Snoozed", True)
 
@@ -351,13 +392,18 @@ DisplayScreenManager:
         rows: 2
 
         GridLayout:
-            rows: 1
+            rows: 2
             size_hint: None, None
             size: root.width, root.height*0.8
+            padding: 100,100
 
             Label: 
-                text: "Lorem ipsum dolor sit amet, \n consectetur adipiscing elit, sed do eiusmod tempor incididunt ut \n labore et dolore magna aliqua. Ut enim ad minim veniam, \n quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \n Duis aute irure dolor in reprehenderit in voluptate \n velit esse cillum dolore eu fugiat nulla pariatur.\n Excepteur sint occaecat cupidatat non proident, \n sunt in culpa qui officia deserunt mollit anim id est laborum."
+                text: "If you have any questions\nabout the study you can find\nthe information sheet and\ncontact information here:"
 
+            Button: 
+                background_color: .12, .84, 1,1
+                text: "Study Information"
+                on_press : app.toSurvey("https://docs.google.com/document/d/1NatiEeheLOBIJX5Ev1qEWDXRUZOzzJQHjDoLXEyFKcE/edit?usp=sharing","https://docs.google.com/document/d/1NatiEeheLOBIJX5Ev1qEWDXRUZOzzJQHjDoLXEyFKcE/edit?usp=sharing")
         GridLayout: 
             cols: 3
             size_hint: None, None
