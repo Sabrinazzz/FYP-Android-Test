@@ -60,7 +60,12 @@ class SurveyScreen(Screen):
   pass
 
 class AltSurveyScreen(Screen):
-    pass
+    def update_survey_numbers(self):
+
+        if int(self.ids.surveys_completed.text)  < 6: 
+            self.ids.surveys_completed.text = str(int(self.ids.surveys_completed.text)+1)
+            print("Updated: ", str(int(self.ids.surveys_completed.text)-1))
+            self.ids.surveys_left.text = str(int(self.ids.surveys_left.text)-1)
     
 class FeedbackScreen(Screen):
     pass
