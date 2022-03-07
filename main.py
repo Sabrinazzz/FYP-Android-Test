@@ -452,12 +452,23 @@ class Menu(App):
         # the way below adds 5 minutes to current time (because user won't always snooze exactly when notification is given)
 
         can_snooze = True
+        
         if self.snooze_counter == 3: 
-            self.survey_number += 1
-            self.snooze_counter = 0
-            print("3 times snoozed")
-            print("new survey number: ", self.survey_number)
-            can_snooze = False
+            if self.survey_number < 5: 
+                self.survey_number += 1
+                self.snooze_counter = 0
+                print("3 times snoozed")
+                print("new survey number: ", self.survey_number)
+                can_snooze = False
+            elif self.survey_number == 5:
+                self.survey_number = 0 
+                self.day_number += 1
+                self.snooze_counter = 0
+                self.time_list = []
+                print("snoozed day number: ", self.day_number)
+                self.time_list = []
+                self.setTargetTime(self.time_list)
+                print("newly generated times: ", self.time_list)
         else: 
             self.snooze_counter += 1
             time = self.showTime(1)
