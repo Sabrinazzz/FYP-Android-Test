@@ -135,19 +135,6 @@ class Menu(App):
 
     def __build__(self):
 
-        #Window.bind(on_keyboards=self.Android_backclick)
-        
-        '''if platform == 'android':
-            import android
-            android.map_key(android.KEYCODE_BACK,1001)
-
-        
-        elif platform == 'ios':
-            from pyobjus import autoclass,obj_dict
-            Clock.schedule_once(self.finish_ios_init)
-
-        Window.bind(on_keyboard = self.back_key_handler)'''
-
         return sm
        # return SettingsScreen
 
@@ -286,25 +273,7 @@ class Menu(App):
     def checkNotification(self,tick):
         print("checkNotification started running") 
         self.time = self.showTime(60) # access current time value in hour:minute:second format
-        '''
-        if self.day_number in range(3,6): # is Thurday to Saturday: skips to next day without survey being taken
-            print("Its the weekend")
-            if time == self.time_list[0]:
-                self.survey_number = 0
-                self.day_number += 1 
-                self.snooze_counter = 0
-                print("updated Day: ", self.day_number)
-                self.surveyTaken()
-        elif self.day_number == 6: # if Sunday: skips to next day without survey being taken and reconfiguring a new time list
-            print("It#s sunday")
-            if time == self.time_list[0]:
-                self.survey_number = 0
-                self.day_number += 1
-                self.snooze_counter = 0
-                self.time_list= []
-                print("updated Day: ", self.day_number)
-                self.setTargetTime(self.time_list) # triggers setting time list for Monday
-        '''
+        
         print("time_list:", self.time_list[self.survey_number], "time: ", self.time)
         if self.day_number < len(self.date_list): 
             print("Survey number: ", self.survey_number)
@@ -329,9 +298,12 @@ class Menu(App):
     def setTargetTime(self,update_list,date):   
 
         
-        earliest_seconds = int(self.earliest_survey_time) * 3600
+        if str(self.earliest_survey_time) == datetime.now().strftime("%H"):
+             earliest_seconds = (int(self.earliest_survey_time) * 3600) + 3600
+             print("Earliest seconds: ",earliest_seconds//3600)
+        else: 
+            earliest_seconds = int(self.earliest_survey_time) * 3600
         latest_seconds = int(self.latest_survey_time) * 3600
-        
         
         
         survey_time_range_seconds = latest_seconds - earliest_seconds
@@ -353,7 +325,7 @@ class Menu(App):
         print(interval_list) 
         time_seconds_list = []
         # set first value depending on earliest value
-        earliest_seconds = int(self.earliest_survey_time) * 3600
+       
         #time_seconds_list.append(earliest_seconds)   
         time_seconds_value = int(earliest_seconds) + interval_1
         time_seconds_list.append(time_seconds_value)
@@ -436,29 +408,31 @@ class Menu(App):
         # - that tracks which day it is
         # if it's the pause (day 3 to 6) then no survey is triggered and at midnight, the day variable is increased
 
-        if self.survey_number < 5: # update survey number until all 6 are complete
-            self.survey_number += 1
-            print("Survey Number: ", self.survey_number) # for testing
-        else: 
-            self.survey_number = 0 # reset survey number for next day (survey number used to access correct time value)
-            if self.day_number < len(self.date_list) - 1: # Laura: ensuring day number does not go greater than the length of the list
-                self.day_number += 1 # increase day by 1 to keep track of which day of study we're on
+        if datetime.now().strftime("%d/%m/%Y") == self.date_list[self.day_number]: # checks to see if today matches the current survey day
+        
+            if self.survey_number < 5: # update survey number until all 6 are complete
+                self.survey_number += 1
+                print("Survey Number: ", self.survey_number) # for testing
             else: 
-                print("No more surveys to deliver :(")
-            self.snooze_counter = 0 # reset snooze counter at new day
-            print("Day: ", self.day_number)
-            self.snooze_counter = 0 # reset snooze counter at new day
-            self.__survey_day = self.date_list[self.day_number]
-            
-            print("Survey Day: ", self.__survey_day)
-            self.time_list = [] # reset time list
-            self.__ids = self.generate_unique_ids() # resetting the ids for the list
-            self.setTargetTime(self.time_list,self.__survey_day) # creating new time list for the next da
-            self.last_time_checked = self.showTime(60)
-            print("Day: ", self.__survey_day,"New time list: ", self.time_list)
+                self.survey_number = 0 # reset survey number for next day (survey number used to access correct time value)
+                if self.day_number < len(self.date_list) - 1: # Laura: ensuring day number does not go greater than the length of the list
+                    self.day_number += 1 # increase day by 1 to keep track of which day of study we're on
+                else: 
+                    print("No more surveys to deliver :(")
+                self.snooze_counter = 0 # reset snooze counter at new day
+                print("Day: ", self.day_number)
+                self.snooze_counter = 0 # reset snooze counter at new day
+                self.__survey_day = self.date_list[self.day_number]
+                
+                print("Survey Day: ", self.__survey_day)
+                self.time_list = [] # reset time list
+                self.__ids = self.generate_unique_ids() # resetting the ids for the list
+                self.setTargetTime(self.time_list,self.__survey_day) # creating new time list for the next da
+                self.last_time_checked = self.showTime(60)
+                print("Day: ", self.__survey_day,"New time list: ", self.time_list)
 
-        return self.__survey_day,self.time_list
-        # this returns what day it is (that is accessing the dat list using the day number as index)
+            return self.__survey_day,self.time_list
+            # this returns what day it is (that is accessing the dat list using the day number as index)
                 
 
         
@@ -578,14 +552,14 @@ class Menu(App):
     # ------------------------ Surveys -----------------------------------
 
     def toSurvey(self, survey_link, end_of_day_survey):
-        # !TODO need to add end of day Survey
-       
-        import webbrowser
-        if self.survey_number != 5:
-            webbrowser.open(survey_link)
-        else: 
-            webbrowser.open(end_of_day_survey)
-    
+
+        if datetime.now().strftime("%d/%m/%Y") == self.date_list[self.day_number]:
+        
+            import webbrowser
+            if self.survey_number != 5:
+                webbrowser.open(survey_link)
+            else: 
+                webbrowser.open(end_of_day_survey)
     
 
 
