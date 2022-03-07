@@ -188,7 +188,7 @@ class Menu(App):
                 self.date_list.append(("0"+str(self.day+i)+self.month_year))
             else:
                 self.date_list.append((str(self.day+i)+self.month_year))
-            self.date_list.append((str(self.day+i+7)+self.month_year))
+            self.date_list.append((str(self.day+i+5)+self.month_year))
             i += 1
         self.date_list.sort()
         
