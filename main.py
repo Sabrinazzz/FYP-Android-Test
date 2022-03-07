@@ -468,7 +468,7 @@ class Menu(App):
             if minute_value >= 55 and minute_value <= 59 : # LAURA: Noticed in this one that you are adding second values, which is not happening in the other ones :)
                 new_minute_value = minute_value - 55
                 new_hour_value = hour_value +1
-                new_time_value = str(new_hour_value)+":0"+str(new_minute_value)+":00"
+                new_time_value = str(new_hour_value)+":0"+str(new_minute_value)
 
             else: 
                 new_minute_value = minute_value + 5
