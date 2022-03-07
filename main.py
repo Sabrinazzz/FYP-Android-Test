@@ -407,7 +407,7 @@ class Menu(App):
 
         print("Earliest: ", self.earliest_survey_time, "Latest: ", self.latest_survey_time)
         self.time_list = []
-        self.setTargetTime(self.time_list, self.date_list[self.day_number])
+        self.setTargetTime(self.time_list, self.date_list[self.day_number],self.notification_times_list)
         return self.earliest_survey_time, self.latest_survey_time
        
         
