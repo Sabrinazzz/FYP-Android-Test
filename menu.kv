@@ -308,13 +308,26 @@ DisplayScreenManager:
             rows: 4
 
             GridLayout: 
-                cols: 1
+                cols: 2
                 size_hint: None, None
                 size: root.width , root.height*0.2
-                padding: 100,50
+                padding: 100,0
 
                 Label: 
-                    text:"Bugs Beeps and Blips"
+                    text:"Surveys Completed: "
+                    
+
+                Label: 
+                    text: "0"
+                    id: surveys_completed
+
+                Label: 
+                    text: "Surveys left: "
+                    
+
+                Label: 
+                    text: "6"
+                    id: surveys_left
         
             GridLayout:
 
