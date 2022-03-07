@@ -102,7 +102,7 @@ DisplayScreenManager:
                         app.root.current = 'informationScreen'
 
             GridLayout:
-                cols: 4
+                cols: 2
                 size_hint: None, None
                 size: root.width, root.height*0.3
                 padding: 100, 20
@@ -121,17 +121,6 @@ DisplayScreenManager:
                         root.manager.transition.direction = 'left'
                         app.root.current = 'settingsScreen'
 
-                Button: 
-                    text: "Test me"
-                    background_color: .12, .84, 1, 1
-                    on_press: 
-                        # app.notify("Hello World!","It's Survey Time",True)
-                        app.show_notification_popup("Hello!", "It's time to take the survey!")
-
-                Button: 
-                    text: "No Toast"
-                    background_color: .12, .84, 1, 1
-                   # on_press: app.notify("Hello World!","no Toast this time",False)
 
 
 
