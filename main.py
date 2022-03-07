@@ -106,6 +106,7 @@ class Menu(App):
     snooze_counter = int(row[4])
     last_time_checked = 0
     time_changed = False # flag to determine when the time preference has been changed
+    notification_times_list = []
     
 # -------------------------------------------------------- Main app functions -------------------------------------------------------------
 
@@ -167,7 +168,7 @@ class Menu(App):
         self.showTime(60)
         self.updateTime(60)
         if len(self.time_list) != 6: # LAURA: only set these on start if there were none from persistence
-            self.setTargetTime(self.time_list,self.__survey_day)
+            self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list)
         self.last_time_checked = self.showTime(60)
         
         #self.checkNotification(60)
@@ -300,94 +301,100 @@ class Menu(App):
 #---------------------------------------------------- setting functions ----------------------------------------------------------------------------------------------
 
 
-    def setTargetTime(self,update_list,date):   
+    def setTargetTime(self,update_list,date,notification_list):   
 
         
-        if str(self.earliest_survey_time) == datetime.now().strftime("%H"):
-             earliest_seconds = (int(self.earliest_survey_time) * 3600) + 3600
-             print("Earliest seconds: ",earliest_seconds//3600)
-        else: 
-            earliest_seconds = int(self.earliest_survey_time) * 3600
-        latest_seconds = int(self.latest_survey_time) * 3600
-        
-        
-        survey_time_range_seconds = latest_seconds - earliest_seconds
-        print("Survey time range: ", survey_time_range_seconds)
-        max_interval_length = survey_time_range_seconds // 6
-        print("Max interval length: ", max_interval_length)
-        min_interval_lenth = survey_time_range_seconds //8
-        print("Min interval length: ", min_interval_lenth)
-        interval_1 = random.randint(min_interval_lenth,max_interval_length)
-        interval_2 = random.randint(min_interval_lenth,max_interval_length)
-        interval_3 = random.randint(min_interval_lenth,max_interval_length)
-        interval_4 = random.randint(min_interval_lenth,max_interval_length)
-        interval_5 = random.randint(min_interval_lenth,max_interval_length)
-        interval_6 = random.randint(min_interval_lenth,max_interval_length)
-        #interval_6 = survey_time_range_seconds - (interval_1 + interval_2 + interval_3 + interval_4 + interval_5)
-        interval_list = [interval_1, interval_2, interval_3, interval_4, interval_5, interval_6]
-
-        
-        print(interval_list) 
-        time_seconds_list = []
-        # set first value depending on earliest value
-       
-        #time_seconds_list.append(earliest_seconds)   
-        time_seconds_value = int(earliest_seconds) + interval_1
-        time_seconds_list.append(time_seconds_value)
-        new_hours_value = (time_seconds_value) // 3600
-        new_minutes_value = ((time_seconds_value % 3600)//60)
-        
-        self.time_list = [] # LAURA: making sure that the original list is emptied first
-        if new_hours_value < 10: 
-            if new_minutes_value < 10:
-                self.time_list.append("0"+str(new_hours_value)+":0"+str(new_minutes_value))
+        notification_list= []
+        for i in range(6): # create 6 lists to put into self.notification_times_lists
+            update_list = [
+            if str(self.earliest_survey_time) == datetime.now().strftime("%H"):
+                 earliest_seconds = (int(self.earliest_survey_time) * 3600) + 3600
+                 print("Earliest seconds: ",earliest_seconds//3600)
             else: 
-                self.time_list.append("0"+str(new_hours_value)+":"+str(new_minutes_value))
-        else: 
-            if new_minutes_value < 10:
-                self.time_list.append(str(new_hours_value)+":0"+str(new_minutes_value))
-            else: 
-                self.time_list.append(str(new_hours_value)+":"+str(new_minutes_value))
+                earliest_seconds = int(self.earliest_survey_time) * 3600
+            latest_seconds = int(self.latest_survey_time) * 3600
 
-        
-        # set rest of the values
-        for i in range (5):
-            new_seconds_value = time_seconds_list[i] + interval_list[i+1] 
-            time_seconds_list.append(new_seconds_value)
-            new_hours_value = (new_seconds_value) // 3600
-            new_minutes_value = ((new_seconds_value % 3600)//60)
+
+            survey_time_range_seconds = latest_seconds - earliest_seconds
+            #print("Survey time range: ", survey_time_range_seconds)
+            max_interval_length = survey_time_range_seconds // 6
+            #print("Max interval length: ", max_interval_length)
+            min_interval_lenth = survey_time_range_seconds //8
+            #print("Min interval length: ", min_interval_lenth)
+            interval_1 = random.randint(min_interval_lenth,max_interval_length)
+            interval_2 = random.randint(min_interval_lenth,max_interval_length)
+            interval_3 = random.randint(min_interval_lenth,max_interval_length)
+            interval_4 = random.randint(min_interval_lenth,max_interval_length)
+            interval_5 = random.randint(min_interval_lenth,max_interval_length)
+            interval_6 = random.randint(min_interval_lenth,max_interval_length)
+            #interval_6 = survey_time_range_seconds - (interval_1 + interval_2 + interval_3 + interval_4 + interval_5)
+            interval_list = [interval_1, interval_2, interval_3, interval_4, interval_5, interval_6]
+
+
+            print(interval_list) 
+            time_seconds_list = []
+            # set first value depending on earliest value
+
+            #time_seconds_list.append(earliest_seconds)   
+            time_seconds_value = int(earliest_seconds) + interval_1
+            time_seconds_list.append(time_seconds_value)
+            new_hours_value = (time_seconds_value) // 3600
+            new_minutes_value = ((time_seconds_value % 3600)//60)
+
+            self.time_list = [] # LAURA: making sure that the original list is emptied first
             if new_hours_value < 10: 
                 if new_minutes_value < 10:
-                    self.time_list.append("0"+str(new_hours_value)+":0"+str(new_minutes_value))
+                    update_list.append("0"+str(new_hours_value)+":0"+str(new_minutes_value))
                 else: 
-                    self.time_list.append("0"+str(new_hours_value)+":"+str(new_minutes_value))
+                    update_list.append("0"+str(new_hours_value)+":"+str(new_minutes_value))
             else: 
                 if new_minutes_value < 10:
-                    self.time_list.append(str(new_hours_value)+":0"+str(new_minutes_value))
+                    update_list.append(str(new_hours_value)+":0"+str(new_minutes_value))
                 else: 
-                    self.time_list.append(str(new_hours_value)+":"+str(new_minutes_value))
-           
-           
-        self.time_list.sort()
+                    update_list.append(str(new_hours_value)+":"+str(new_minutes_value))
 
-     
-        print("Time seconds list: ",time_seconds_list)
-        print("Time List: ", self.time_list)
-        
-        # set times on iOS
-        if platform == "ios":
-            print("id list: ", self.__ids)
-            #test_updated_list = ["17:30", "17:32", "17:34", "17:35", "17:36", "17:37"]
-           # self.time_list = test_updated_list
-            print("----- TARGET DATE ----- ", date)
-            for pos, time in enumerate(self.time_list):
-                # ---- line creates a randomly generated id. There is a change it will not be unique.
-                id = self.__ids[pos]
-                self.notify("Hello!", "It's time to take the survey!",id=id,date=date,time=time) # notify(self,title,message,toast,id=None,date=None,time=None):
-        
-    
-        print(update_list)
-        return update_list
+
+            # set rest of the values
+            for i in range (5):
+                new_seconds_value = time_seconds_list[i] + interval_list[i+1] 
+                time_seconds_list.append(new_seconds_value)
+                new_hours_value = (new_seconds_value) // 3600
+                new_minutes_value = ((new_seconds_value % 3600)//60)
+                if new_hours_value < 10: 
+                    if new_minutes_value < 10:
+                        update_list.append("0"+str(new_hours_value)+":0"+str(new_minutes_value))
+                    else: 
+                        update_list.append("0"+str(new_hours_value)+":"+str(new_minutes_value))
+                else: 
+                    if new_minutes_value < 10:
+                        update_list.append(str(new_hours_value)+":0"+str(new_minutes_value))
+                    else: 
+                        update_list.append(str(new_hours_value)+":"+str(new_minutes_value))
+
+
+            update_list.sort()
+
+
+            print("Time seconds list: ",time_seconds_list)
+            print("Time List: ", self.time_list)
+
+            # set times on iOS
+            if platform == "ios":
+                print("id list: ", self.__ids)
+                #test_updated_list = ["17:30", "17:32", "17:34", "17:35", "17:36", "17:37"]
+               # self.time_list = test_updated_list
+                print("----- TARGET DATE ----- ", date)
+                for pos, time in enumerate(self.time_list):
+                    # ---- line creates a randomly generated id. There is a change it will not be unique.
+                    id = self.__ids[pos]
+                    self.notify("Hello!", "It's time to take the survey!",id=id,date=date,time=time) # notify(self,title,message,toast,id=None,date=None,time=None):
+
+
+            print(update_list) # prints singular list that was generated within 1 execition of the loop
+            notification_list.append(update_list) # appends list into matrix
+                
+        print(notification_list)
+        return notification_list
 
 # --------------------------------------------------------------button triggered functions -----------------------------------
         
@@ -466,9 +473,9 @@ class Menu(App):
                 self.snooze_counter = 0
                 self.time_list = []
                 print("snoozed day number: ", self.day_number)
-                self.time_list = []
-                self.setTargetTime(self.time_list)
-                print("newly generated times: ", self.time_list)
+                #self.time_list = []
+                #self.setTargetTime(self.time_list)
+                #print("newly generated times: ", self.time_list)
         else: 
             self.snooze_counter += 1
             time = self.showTime(1)
@@ -476,7 +483,7 @@ class Menu(App):
             
             hour_value = int(time_values[0])
             minute_value = int(time_values[1])
-            if minute_value >= 55 and minute_value <= 59 : # LAURA: Noticed in this one that you are adding second values, which is not happening in the other ones :)
+            if minute_value >= 55 and minute_value <= 59 : # LAURA: Noticed in this one that you are adding second values, which is not happening in the other ones :) # SABRINA: Resolved :)
                 new_minute_value = minute_value - 55
                 new_hour_value = hour_value +1
                 new_time_value = str(new_hour_value)+":0"+str(new_minute_value)
