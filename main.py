@@ -439,7 +439,7 @@ class Menu(App):
                 print("Survey Day: ", self.__survey_day)
                 self.time_list = [] # reset time list
                 self.__ids = self.generate_unique_ids() # resetting the ids for the list
-                self.setTargetTime(self.time_list,self.__survey_day) # creating new time list for the next da
+                #self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list) # creating new time list for the next da
                 self.last_time_checked = self.showTime(60)
                 print("Day: ", self.__survey_day,"New time list: ", self.time_list)
 
