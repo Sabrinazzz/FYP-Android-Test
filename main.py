@@ -13,8 +13,8 @@ from kivy.uix.popup import Popup
 from plyer import notification
 from plyer.utils import platform
 from kivy.clock import Clock
-from datetime import datetime, date
-from time import strftime, time
+from datetime import datetime, date, time
+#from time import strftime, time
 import random, string
 from kivy.core.window import Window
 from os.path import join,dirname, realpath
@@ -30,6 +30,17 @@ with open('sample.csv','rt')as f:
   data = csv.reader(f)
   for row in data:
         pass
+
+#date_content = []
+#time_content = []
+#with open('times_persistence.csv', 'rt') as f:
+#    data = csv.reader(f)
+#    for i, line in enumerate(data):
+#        if i != 0:
+#            date_content.append(line[0])
+#            time_content.append(line[1:])
+#print("date content: ", date_content, "\ntime content", time_content, "\n" * 6)
+
 
 #--------------------------------   Global Variables-----------------------------------------------------------------------------
 
@@ -60,12 +71,18 @@ class SurveyScreen(Screen):
   pass
 
 class AltSurveyScreen(Screen):
-    def update_survey_numbers(self):
-
+    def update_survey_numbers(self, survey_number):
+        '''
         if int(self.ids.surveys_completed.text)  < 6: 
             self.ids.surveys_completed.text = str(int(self.ids.surveys_completed.text)+1)
             print("Updated: ", str(int(self.ids.surveys_completed.text)-1))
             self.ids.surveys_left.text = str(int(self.ids.surveys_left.text)-1)
+        '''
+        if survey_number < 6:
+            self.ids.surveys_completed.text = str(survey_number)
+            print("Updated: ", str(survey_number-1))
+            self.ids.surveys_left.text = str(6 - survey_number)
+
     
 class FeedbackScreen(Screen):
     pass
@@ -96,7 +113,9 @@ sm.add_widget(AltSurveyScreen(name='altSurveyScreen'))
 
 
 class Menu(App):
+
     time_list =[]
+    date_list=[]
     #surevy_taken = False
     survey_number = int(row[0])
     times_generated = True
@@ -120,21 +139,20 @@ class Menu(App):
         
 
             # ---------- LAURA: getting persisted values on start 
-            persisted_rows = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
-            print("persisted rows returned:", persisted_rows)
+            persisted_rows, self.date_list, self.notification_times_list = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
+            print("persisted rows returned:", self.date_list, self.notification_times_list)
+            #self.set_persistence()
+            
             if persisted_rows != []:
                 self.survey_number = int(persisted_rows[0])
                 self.day_number = int(persisted_rows[1])
                 self.earliest_survey_time = int(persisted_rows[2])
                 self.latest_survey_time = int(persisted_rows[3])
                 self.snooze_counter = int(persisted_rows[4])
-                if len(self.time_list) != 6:
-                    self.time_list = [0] * 6 
-                for i in range(5,11):
-                    self.time_list[i-5] = persisted_rows[i]
-                self.last_time_checked = persisted_rows[11]
-            print("values received on start: ", self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.time_list)
+                self.last_time_checked = persisted_rows[5]
+            print("values received on start: ", self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.last_time_checked)
             # ----------- END PERSISTENCE
+            
         
 
         
@@ -156,9 +174,11 @@ class Menu(App):
     def on_start(self):
 
         self.__ids = self.generate_unique_ids()
-        print("survey ids: ", self.__ids)
-        self.test_updated_list = ["17:37", "17:39", "17:40", "17:42", "17:44", "17:46"]
-        self.set_dates()
+        
+       # print("survey ids: ", self.__ids)
+       # self.test_updated_list = ["17:37", "17:39", "17:40", "17:42", "17:44", "17:46"]
+        if self.date_list == []:
+            self.set_dates()
         self.__survey_day = self.date_list[self.day_number]
         # LAURA ADDED: set-up iOS notification center
         if platform == "ios": # if the user is in iOS, trigger user to allow notifications
@@ -167,9 +187,14 @@ class Menu(App):
         print("Survey Number on start: ",self.survey_number)
         self.showTime(60)
         self.updateTime(60)
-        if len(self.time_list) != 6: # LAURA: only set these on start if there were none from persistence
-            self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list)
+      #  if len(self.time_list) != 6: # LAURA: only set these on start if there were none from persistence
+      #      self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list)
+        if self.notification_times_list == []:
+            self.notification_times_list = self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list)
+        
         self.last_time_checked = self.showTime(60)
+        if platform == "ios":
+            self.reset_all_notifications(self.date_list, self.notification_times_list,self.__ids)
         
         #self.checkNotification(60)
         self.continuousylyCheck(60)
@@ -184,7 +209,7 @@ class Menu(App):
         self.month_year = datetime.now().strftime("-%m-%Y")
         i = 0
         while i < 3:
-            if self.day < 10:
+            if self.day + i < 10: # Laura: changed because the next day could be a 2 integer day :)
                 self.date_list.append(("0"+str(self.day+i)+self.month_year))
             else:
                 self.date_list.append((str(self.day+i)+self.month_year))
@@ -192,13 +217,13 @@ class Menu(App):
             i += 1
         self.date_list.sort()
         
-        print(self.date_list)
+        print("Dates returned:", self.date_list)
     
     # LAURA: This method generates a list of unique IDs for each survey notification
     def generate_unique_ids(self):
-        return [''.join("survey%d" % i) for i in range(1,7)]
+        #return [''.join("survey%d" % i) for i in range(1,7)]
 
-        #return [''.join([random.choice(string.ascii_letters + string.digits) for n in range(20)]) for n in range(6)]
+        return [[''.join([random.choice(string.ascii_letters + string.digits) for n in range(20)]) for n in range(6)] for n in range(6)]
         
 
     def android_back_button(self, window, key,*largs): 
@@ -209,38 +234,41 @@ class Menu(App):
         # put persistance here? 
 
         self.last_time_checked = self.showTime(60)
+        '''
         if platform == "ios":
             user_data_dir = App.get_running_app().user_data_dir
             filename = join(user_data_dir, "sample.csv")
             try:
                 with open(filename, "w") as fd:
-                    fd.write("Survey Number,Day Number,Earliest Survey Time,Latest Survey Time,Snooze Counter,Time_1,Time_2,Time_3,Time_4,Time_5,Time_6,last_time\n")
-                    fd.write("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (self.survey_number, self.day_number, self.earliest_survey_time,self.latest_survey_time,self.snooze_counter,self.time_list[0],self.time_list[1],self.time_list[2],self.time_list[3],self.time_list[4],self.time_list[5],self.last_time_checked))
+                    fd.write("Survey Number,Day Number,Earliest Survey Time,Latest Survey Time,Snooze Counter,last_time\n")
+                    fd.write("%s,%s,%s,%s,%s,%ss" % (self.survey_number, self.day_number, self.earliest_survey_time,self.latest_survey_time,self.snooze_counter,self.last_time_checked))
                 print("Persistence stored!")
             except:
                 print("could not write to file")
+        '''
+        self.set_persistence()
         return True
 
     def on_resume(self):
         # could reassign vairables by reading from the persistance file here. 
-        persisted_rows = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
-        self.survey_number = int(persisted_rows[0])
-        self.day_number = int(persisted_rows[1])
-        self.earliest_survey_time = int(persisted_rows[2])
-        self.latest_survey_time = int(persisted_rows[3])
-        self.snooze_counter = int(persisted_rows[4])
-        if len(self.time_list) != 6:
-            self.time_list = [0] * 6 
-        for i in range(5,11):
-            self.time_list[i-5] = persisted_rows[i]
-        self.last_time_checked = persisted_rows[11]
-
-        print("values received on resume:\n survey number: %s\n, day number: %s\n, earliest time: %s\n, latest time: %s\n, snooze counter: %s\n, time list: %s\n, last time checked before pause: %s " % (self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.time_list, self.last_time_checked))
+        persisted_rows, self.date_list, self.notification_times_list = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
         
+        if persisted_rows == []:
+            self.survey_number = int(persisted_rows[0])
+            self.day_number = int(persisted_rows[1])
+            self.earliest_survey_time = int(persisted_rows[2])
+            self.latest_survey_time = int(persisted_rows[3])
+            self.snooze_counter = int(persisted_rows[4])
+            self.last_time_checked = persisted_rows[5]
+
+        print("values received on resume:\n survey number: %s\n, day number: %s\n, earliest time: %s\n, latest time: %s\n, snooze counter: %s\n, date list: %s,\n time list: %s\n, last time checked before pause: %s " % (self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.date_list, self.notification_times_list, self.last_time_checked))
         
     def get_persistence(self):
         print("persistence read init!")
+        filename = join(App.get_running_app().user_data_dir, "times_persistence.csv")
         contents = []
+        date_content = []
+        time_content = []
         try:
             with open(self.__filename,'rt')as f:
                 data = csv.reader(f)
@@ -251,13 +279,45 @@ class Menu(App):
         except:
             print("no such file. Trying to create...")
             try:
-                with open(self.__filename, "w") as fd:
-                    fd.write("Time List,Survey Number,Day Number,Earliest Survey Time,Latest Survey Time,Snooze Counter\n")
-                    fd.write("0,%s,%s,%s,%s,%s" % (self.survey_number, self.day_number, self.earliest_survey_time,self.latest_survey_time,self.snooze_counter))
-                print("File created! From now, using existing values")
+                self.set_persistence()
             except:
                 print("could not write to file")
-        return contents
+        try:
+            with open(filename,'rt')as f:
+                data = csv.reader(f)
+                for i, line in enumerate(data):
+                    if i != 0:
+                        date_content.append(line[0])
+                        time_content.append(line[1:])
+        except:
+            print("no such file. Trying to create...")
+            try:
+                self.set_persistence()
+            except:
+                print("could not write to file")
+        return contents, date_content, time_content # return all time lists
+    
+    def set_persistence(self):
+        print("persistence write init!")
+        filename = join(App.get_running_app().user_data_dir, "times_persistence.csv")
+        try:
+            with open(self.__filename, "w") as fd:
+                fd.write("Survey Number,Day Number,Earliest Survey Time,Latest Survey Time,Snooze Counter,last_time\n")
+                fd.write("%s,%s,%s,%s,%s,%s" % (self.survey_number, self.day_number, self.earliest_survey_time,self.latest_survey_time,self.snooze_counter,self.last_time_checked))
+            print("Main persistence stored!")
+        except:
+            print("could not write main persistence.")
+        try:
+            with open(filename, "w") as fd:
+                fd.write("Date,Time_1,Time_2,Time_3,Time_4,Time_5,Time_6\n")
+                for i, date in enumerate(self.date_list):
+                    print("%s," % date + ','.join(self.notification_times_list[i]) + "\n")
+                    fd.write("%s," % date + ','.join(self.notification_times_list[i]) + "\n")
+            print("Time persistence stored!")
+        except:
+            print("could not write time persistence.")            
+
+
    
 
 #------------------------- time based functions---------------------------------------------------------------------------------------
@@ -277,6 +337,7 @@ class Menu(App):
 #--------------------------------- scheduling functions -----------------------------------------------------------------------------------------------------------
 
     def checkNotification(self,tick):
+        self.time_list = self.notification_times_list[self.day_number]
         print("checkNotification started running") 
         self.time = self.showTime(60) # access current time value in hour:minute:second format
         
@@ -286,12 +347,21 @@ class Menu(App):
             print("List: ", self.time_list)
             print("time_list:", self.time_list[self.survey_number], "time: ", self.time, "last time checked", self.last_time_checked)
             self.__today = str(datetime.today().strftime('%d-%m-%Y'))
-            if self.__today == self.date_list[self.day_number] and (self.time >= self.time_list[self.survey_number] or self.time_list[self.survey_number] == self.last_time_checked): # any other day where surveys are triggeres normally
+            if self.__today == self.date_list[self.day_number] and (self.time_in_range(self.time, self.time_list[self.survey_number])): # any other day where surveys are triggeres normally
                 '''this passes!  05-03-2022 05-03-2022 12:14 09:42 09:42'''
                 print("this passes! ", self.__today, self.date_list[self.day_number], self.time, self.time_list[self.survey_number], self.last_time_checked)
                 #self.notify("Hello World!","It's Survey Time",True)  # triggers notification
                 self.show_notification_popup("Hello!", "It's time to take the survey!")
         print("checknotification ran")
+
+
+    def time_in_range(self, start, end):
+        s1, s2 = start.split(":")
+        e1, e2 = end.split(":")
+        p1 = time(int(s1), int(s2), 0)
+        p2 = time(int(e1), int(e2), 0)
+        """Returns whether current is in the range [start, end]"""
+        return p1 >= p2
             
 
     def continuousylyCheck(self,tick): # calls previous function once per second --> checks for match between current time and value in time list
@@ -306,7 +376,7 @@ class Menu(App):
         
         notification_list= []
         for i in range(6): # create 6 lists to put into self.notification_times_lists
-            update_list = [
+            update_list = []
             if str(self.earliest_survey_time) == datetime.now().strftime("%H"):
                  earliest_seconds = (int(self.earliest_survey_time) * 3600) + 3600
                  print("Earliest seconds: ",earliest_seconds//3600)
@@ -378,22 +448,11 @@ class Menu(App):
             print("Time seconds list: ",time_seconds_list)
             print("Time List: ", self.time_list)
 
-            # set times on iOS
-            if platform == "ios":
-                print("id list: ", self.__ids)
-                #test_updated_list = ["17:30", "17:32", "17:34", "17:35", "17:36", "17:37"]
-               # self.time_list = test_updated_list
-                print("----- TARGET DATE ----- ", date)
-                for pos, time in enumerate(self.time_list):
-                    # ---- line creates a randomly generated id. There is a change it will not be unique.
-                    id = self.__ids[pos]
-                    self.notify("Hello!", "It's time to take the survey!",id=id,date=date,time=time) # notify(self,title,message,toast,id=None,date=None,time=None):
-
-
             print(update_list) # prints singular list that was generated within 1 execition of the loop
             notification_list.append(update_list) # appends list into matrix
                 
         print(notification_list)
+
         return notification_list
 
 # --------------------------------------------------------------button triggered functions -----------------------------------
@@ -407,7 +466,7 @@ class Menu(App):
 
         print("Earliest: ", self.earliest_survey_time, "Latest: ", self.latest_survey_time)
         self.time_list = []
-        self.setTargetTime(self.time_list, self.date_list[self.day_number],self.notification_times_list)
+        self.notification_times_list = self.setTargetTime(self.time_list, self.date_list[self.day_number],self.notification_times_list)
         return self.earliest_survey_time, self.latest_survey_time
        
         
@@ -419,8 +478,8 @@ class Menu(App):
         # - when all 6 surveys of the day are completed, in increases the day variable
         # - that tracks which day it is
         # if it's the pause (day 3 to 6) then no survey is triggered and at midnight, the day variable is increased
-
-        if datetime.now().strftime("%d/%m/%Y") == self.date_list[self.day_number]: # checks to see if today matches the current survey day
+        self.snooze_counter = 0
+        if datetime.now().strftime("%d-%m-%Y") == self.date_list[self.day_number]: # checks to see if today matches the current survey day
         
             if self.survey_number < 5: # update survey number until all 6 are complete
                 self.survey_number += 1
@@ -438,11 +497,11 @@ class Menu(App):
                 
                 print("Survey Day: ", self.__survey_day)
                 self.time_list = [] # reset time list
-                self.__ids = self.generate_unique_ids() # resetting the ids for the list
+                # self.__ids = self.generate_unique_ids() # resetting the ids for the list
                 #self.setTargetTime(self.time_list,self.__survey_day,self.notification_times_list) # creating new time list for the next da
                 self.last_time_checked = self.showTime(60)
                 print("Day: ", self.__survey_day,"New time list: ", self.time_list)
-
+            
             return self.__survey_day,self.time_list
             # this returns what day it is (that is accessing the dat list using the day number as index)
                 
@@ -497,10 +556,10 @@ class Menu(App):
                     #new_time_value = str(hour_value)+":0"+str(new_minute_value)+":00"
                     new_time_value = str(hour_value)+":0"+str(new_minute_value)
             #self.test_updated_list[self.survey_number] = new_time_value
-            self.time_list[self.survey_number] = new_time_value
+            self.notification_times_list[self.day_number][self.survey_number] = new_time_value # Laura: changing date number
             print(self.__ids[self.survey_number],self.date_list[self.survey_number],self.time_list[self.survey_number])
             if platform == "ios":
-                self.notify("Hello!", "It's time to take the survey!",id=self.__ids[self.survey_number],date=self.date_list[self.day_number],time=self.time_list[self.survey_number])
+                self.notify("Hello!", "It's time to take the survey!",id=self.__ids[self.day_number][self.survey_number],date=self.date_list[self.day_number],time=self.notification_times_list[self.day_number][self.survey_number])
             
             print("Snoozed list: ",self.time_list) # updates time list with new value when the next notification will be sent
             return can_snooze
@@ -521,7 +580,15 @@ class Menu(App):
            # id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(15)])
             self.ios_notification_center.notify_ios_date(title, message, id, date, time, repeat=False)
         
-            
+    
+    # LAURA: Resetting all notifications
+    def reset_all_notifications(self, dates, times, ids):
+        self.ios_notification_center.remove_pending_notifications() # make sure existing notifications have been removed first
+        for i, date in enumerate(dates):
+            for j, time in enumerate(times):
+                self.ios_notification_center.notify_ios_date("Hello!", "It's time to take the survey!",id=ids[i][j],date=date,time=times[i][j])
+                print("Date: %s\tTime: %s\tID:%s" % (date, times[i][j], ids[i][j]))
+            print() 
 
 
     def show_notification_popup(self,title, message):
@@ -576,13 +643,19 @@ class Menu(App):
 
     def toSurvey(self, survey_link, end_of_day_survey):
 
-        if datetime.now().strftime("%d/%m/%Y") == self.date_list[self.day_number]:
+        if datetime.now().strftime("%d-%m-%Y") == self.date_list[self.day_number]: #Laura: changed the format to work for this notification
         
             import webbrowser
             if self.survey_number != 5:
                 webbrowser.open(survey_link)
             else: 
                 webbrowser.open(end_of_day_survey)
+    
+    def set_survey_screen(self):
+        update_screen = self.root.get_screen("altSurveyScreen")
+        update_screen.ids.surveys_completed.text = str(self.survey_number)
+        update_screen.ids.surveys_left.text = str(6 - self.survey_number)
+        print(update_screen)
     
 
 

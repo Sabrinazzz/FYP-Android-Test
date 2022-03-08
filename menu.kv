@@ -24,6 +24,7 @@ DisplayScreenManager:
         on_press: 
             app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_8oDU80kby5218HA','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
             app.surveyTaken()
+            app.set_survey_screen()
             app.close_notification_popup()
     Button:
         id: cancel_button
@@ -290,9 +291,9 @@ DisplayScreenManager:
 
 <AltSurveyScreen>
     name: "altSurveyScreen"
+    
 
     FloatLayout:
-
         GridLayout: 
             rows: 4
 
@@ -330,6 +331,8 @@ DisplayScreenManager:
                     on_press: 
                         app.toSurvey('https://cacsss.eu.qualtrics.com/jfe/form/SV_8oDU80kby5218HA','https://cacsss.eu.qualtrics.com/jfe/form/SV_cuueTvjOklbQy0K')
                         app.surveyTaken()
+                        app.set_survey_screen()
+                        #root.update_survey_numbers()
                     background_color: .12, .84, 1,1
             
             GridLayout: 
