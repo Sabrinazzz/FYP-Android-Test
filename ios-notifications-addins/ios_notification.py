@@ -41,3 +41,8 @@ class IOSNotification:
     #remove pending notifcations (in cases of clogging)
     def remove_pending_notifications(self):
         self.notification_worker.removePendingNotifications()
+    
+    def logcat(self, message):
+        NSString = autoclass("NSString")
+        n_message = NSString.alloc().initWithUTF8String_(message)
+        self.notification_worker.logcat_(n_message)

@@ -134,13 +134,16 @@ class Menu(App):
         super(Menu, self).__init__()
         self.time = self.showTime(60) # getting time on init
         if platform == "ios":
+            self.ios_notification_center = IOSNotification()
+            self.ios_notification_center.remove_pending_notifications()
             self.__filename = join(App.get_running_app().user_data_dir, "sample.csv")
             print("user directory at: ", self.__filename)
         
 
             # ---------- LAURA: getting persisted values on start 
             persisted_rows, self.date_list, self.notification_times_list = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
-            print("persisted rows returned:", self.date_list, self.notification_times_list)
+            
+            self.ios_notification_center.logcat("persisted rows returned: " +  str(self.date_list) + str(self.notification_times_list))
             #self.set_persistence()
             
             if persisted_rows != []:
@@ -150,7 +153,7 @@ class Menu(App):
                 self.latest_survey_time = int(persisted_rows[3])
                 self.snooze_counter = int(persisted_rows[4])
                 self.last_time_checked = persisted_rows[5]
-            print("values received on start: ", self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.last_time_checked)
+            self.ios_notification_center.logcat("values received on start: %s %s %s %s %s %s" % (str(self.survey_number), self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.last_time_checked))
             # ----------- END PERSISTENCE
             
         
@@ -181,9 +184,7 @@ class Menu(App):
             self.set_dates()
         self.__survey_day = self.date_list[self.day_number]
         # LAURA ADDED: set-up iOS notification center
-        if platform == "ios": # if the user is in iOS, trigger user to allow notifications
-            self.ios_notification_center = IOSNotification()
-            self.ios_notification_center.remove_pending_notifications()
+
         print("Survey Number on start: ",self.survey_number)
         self.showTime(60)
         self.updateTime(60)
@@ -199,7 +200,7 @@ class Menu(App):
         #self.checkNotification(60)
         self.continuousylyCheck(60)
         #print("Survey Number on start: ",self.survey_number)
-        
+        self.set_survey_screen()
         return super().on_start()
         
 
@@ -252,7 +253,7 @@ class Menu(App):
     def on_resume(self):
         # could reassign vairables by reading from the persistance file here. 
         persisted_rows, self.date_list, self.notification_times_list = self.get_persistence() # ["Time List","Survey Number","Day Number","Earliest Survey Time","Latest Survey Time","Snooze Counter"]
-        
+        self.ios_notification_center.logcat("persisted rows returned: " +  str(self.date_list) + str(self.notification_times_list))
         if persisted_rows == []:
             self.survey_number = int(persisted_rows[0])
             self.day_number = int(persisted_rows[1])
@@ -261,7 +262,8 @@ class Menu(App):
             self.snooze_counter = int(persisted_rows[4])
             self.last_time_checked = persisted_rows[5]
 
-        print("values received on resume:\n survey number: %s\n, day number: %s\n, earliest time: %s\n, latest time: %s\n, snooze counter: %s\n, date list: %s,\n time list: %s\n, last time checked before pause: %s " % (self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.date_list, self.notification_times_list, self.last_time_checked))
+        if platform == "ios":
+            self.ios_notification_center.logcat("values received on resume:\n survey number: %s\n, day number: %s\n, earliest time: %s\n, latest time: %s\n, snooze counter: %s\n, date list: %s,\n time list: %s\n, last time checked before pause: %s " % (self.survey_number, self.day_number, self.earliest_survey_time, self.latest_survey_time, self.snooze_counter, self.date_list, self.notification_times_list, self.last_time_checked))
         
     def get_persistence(self):
         print("persistence read init!")
@@ -313,9 +315,17 @@ class Menu(App):
                 for i, date in enumerate(self.date_list):
                     print("%s," % date + ','.join(self.notification_times_list[i]) + "\n")
                     fd.write("%s," % date + ','.join(self.notification_times_list[i]) + "\n")
-            print("Time persistence stored!")
+            if platform == "ios":
+                self.ios_notification_center.logcat("Time persistence stored!")  # logging messages for debugging
+            else:
+                print("Time persistence stored!")
         except:
-            print("could not write time persistence.")            
+            if platform == "ios":
+                self.ios_notification_center.logcat("could not write time persistence.")
+            else: 
+                print("could not write time persistence.")  
+            
+                
 
 
    
@@ -463,10 +473,12 @@ class Menu(App):
             self.earliest_survey_time = int(earliest.text) 
         if latest.text != "":
             self.latest_survey_time = int(latest.text)
-
+        
         print("Earliest: ", self.earliest_survey_time, "Latest: ", self.latest_survey_time)
         self.time_list = []
         self.notification_times_list = self.setTargetTime(self.time_list, self.date_list[self.day_number],self.notification_times_list)
+        if platform == "ios":
+            self.reset_all_notifications(self.date_list, self.notification_times_list,self.__ids)
         return self.earliest_survey_time, self.latest_survey_time
        
         
@@ -525,16 +537,19 @@ class Menu(App):
                 self.snooze_counter = 0
                 print("3 times snoozed")
                 print("new survey number: ", self.survey_number)
+                self.set_survey_screen()
                 can_snooze = False
             elif self.survey_number == 5:
                 self.survey_number = 0 
                 self.day_number += 1
                 self.snooze_counter = 0
                 self.time_list = []
+                self.set_survey_screen()
                 print("snoozed day number: ", self.day_number)
                 #self.time_list = []
                 #self.setTargetTime(self.time_list)
                 #print("newly generated times: ", self.time_list)
+                can_snooze = False
         else: 
             self.snooze_counter += 1
             time = self.showTime(1)
@@ -557,9 +572,12 @@ class Menu(App):
                     new_time_value = str(hour_value)+":0"+str(new_minute_value)
             #self.test_updated_list[self.survey_number] = new_time_value
             self.notification_times_list[self.day_number][self.survey_number] = new_time_value # Laura: changing date number
-            print(self.__ids[self.survey_number],self.date_list[self.survey_number],self.time_list[self.survey_number])
+           # print(self.__ids[self.survey_number],self.date_list[self.day_number],self.time_list[self.survey_number])
             if platform == "ios":
-                self.notify("Hello!", "It's time to take the survey!",id=self.__ids[self.day_number][self.survey_number],date=self.date_list[self.day_number],time=self.notification_times_list[self.day_number][self.survey_number])
+                self.ios_notification_center.logcat("%s \n %s \n %s" % (self.__ids, self.date_list, self.notification_times_list))
+                self.ios_notification_center.logcat("Day: %s, Time: %s" % (self.date_list[self.day_number], self.notification_times_list[self.day_number][self.survey_number]))
+                #self.ios_notification_center.logcat("%s - %s - %s" % (self.__ids[self.day_number][self.survey_number], self.date_list[self.day_number], self.notification_times_list[self.day_number][self.survey_number]) )
+               # self.notify("Hello!", "It's time to take the survey!",id=self.__ids[self.day_number][self.survey_number],date=self.date_list[self.day_number],time=self.notification_times_list[self.day_number][self.survey_number])
             
             print("Snoozed list: ",self.time_list) # updates time list with new value when the next notification will be sent
             return can_snooze
@@ -611,7 +629,7 @@ class Menu(App):
         can_snooze = self.snooze()
         snooze_popup = SnoozePopUp()
         if can_snooze:
-            snooze_popup.ids.snooze_label.text = "Snoozed until %s" % self.time_list[self.survey_number]
+            snooze_popup.ids.snooze_label.text = "Snoozed until %s" % self.notification_times_list[self.day_number][self.survey_number]
         else:
             snooze_popup.ids.snooze_label.text = "Cannot snooze survey."
         self.snooze_display = Popup(title="Survey Snoozed", content=snooze_popup, size_hint=(None,None), size=(400,400),auto_dismiss=False)
@@ -651,8 +669,9 @@ class Menu(App):
             else: 
                 webbrowser.open(end_of_day_survey)
     
-    def set_survey_screen(self):
+    def set_survey_screen(self): # Laura: added this to dynamically change text on survey screen
         update_screen = self.root.get_screen("altSurveyScreen")
+        update_screen.ids.survey_date.text = str(self.date_list[self.day_number])
         update_screen.ids.surveys_completed.text = str(self.survey_number)
         update_screen.ids.surveys_left.text = str(6 - self.survey_number)
         print(update_screen)

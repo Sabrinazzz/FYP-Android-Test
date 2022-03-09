@@ -12,6 +12,7 @@
 - (void)requestNotificationCenter:(NSString *)py_title withbody:(NSString *)py_body withdate:(NSString *) py_date withtime:(NSString *)py_time withid:(NSString *)py_uniqueid withrepeat:(bool)py_repeat;
 - (NSDate *)stringToDate:(NSString *)str_date with_time:(NSString *)str_time;
 - (NSString *)to12Hour:(NSString *)str_time;
+- (void)logcat:(NSString *)message;
 - (void)removePendingNotifications;
 
 @end
@@ -116,6 +117,7 @@ UNUserNotificationCenter *center = nil;
             NSLog(@"Something went wrong: %@",error);
           }
           else {
+              NSLog(@"Notification scheduled for %@\n", d);
               printf("Notification send with calendar event complete.");
           }
         }];
@@ -137,12 +139,12 @@ UNUserNotificationCenter *center = nil;
     if (found.location != NSNotFound) {
         NSString *time_returned = [self to12Hour:str_time];
         //final_date = [NSString stringWithFormat:@"%@ %@", str_date, time_returned];
-        NSLog(@"This is in 12-hour format!");
+      //  NSLog(@"This is in 12-hour format!");
       //  [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm"];
     } else {
         //final_date = [NSString stringWithFormat:@"%@ %@", str_date, str_time];
        // NSLog(final_date);
-        NSLog(@"This is in 24-hour format!");
+      //  NSLog(@"This is in 24-hour format!");
        // [dateFormatter setDateFormat:@"dd-MM-yyyy HH:mm"];
     }
    /* NSRange *range = []
@@ -158,7 +160,7 @@ UNUserNotificationCenter *center = nil;
     NSString *minute = [str_time componentsSeparatedByString:@":"][1];
     int h_as_int = [hour intValue];
     int m_as_int = [minute intValue];
-    NSLog(@"Hour: %d and Minute: %d", h_as_int, m_as_int);
+   // NSLog(@"Hour: %d and Minute: %d", h_as_int, m_as_int);
     final_date = [NSString stringWithFormat:@"%@", str_date];
     [dateFormatter setDateFormat:@"dd-MM-yyyy"];
     NSDate *d  = [dateFormatter dateFromString:final_date];
@@ -192,19 +194,14 @@ UNUserNotificationCenter *center = nil;
     return final_time;
 }
 
+- (void)logcat:(NSString *)message {
+    NSLog(@"[Kivy-IOS] - %@", message);
+}
+
 //remove pending notifications to remove clogs
 - (void)removePendingNotifications
 {
       //UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
       [center removeAllPendingNotificationRequests];
 }
-@end
-
-// initially implemented this to do a background task, but I still need to find a way to get it to work properly.
-@interface BackgroundTasksCenter : NSObject
--(id)init;
--(void)scheduleLocalNotifications;
--(void)handleAppRefreshTask:(BGTask *)task API_AVAILABLE(ios(13.0));
--(void)scheduleProcessingTask;
-
 @end
